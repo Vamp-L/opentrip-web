@@ -1,0 +1,155 @@
+<%- include('../partials/head', { title: title }) %>
+
+<div class="min-h-screen flex flex-col lg:pl-72">
+  <!-- Background Header Argon -->
+  <div class="fixed top-0 left-0 right-0 h-80 bg-gradient-to-r from-argon-primary to-argon-info -z-10"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col">
+    <%- include('../partials/navbar', { pageTitle: pageTitle }) %>
+
+    <main class="px-6 pb-10 flex-1">
+      <!-- Banner Pencarian & Filter Katalog -->
+      <div class="bg-white rounded-2xl shadow-argon border border-slate-100 p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <span class="inline-block px-3 py-1 rounded-full bg-indigo-50 text-argon-primary text-[11px] font-extrabold uppercase tracking-wider mb-1.5">
+              Eksplorasi Nusantara
+            </span>
+            <h2 class="text-xl font-extrabold text-argon-dark">Pilih Destinasi Open Trip Impian Anda</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Kuota terbatas di setiap keberangkatan. Pilih paket dan tentukan jumlah peserta.</p>
+          </div>
+
+          <form action="/catalog" method="GET" class="flex items-center gap-2 w-full md:w-auto">
+            <div class="relative flex-1 md:w-72">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+              </span>
+              <input
+                type="text"
+                name="q"
+                value="<%= searchQuery %>"
+                placeholder="Cari Bromo, Labuan Bajo, Raja Ampat..."
+                class="w-full pl-9 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-argon-primary"
+              />
+            </div>
+            <button type="submit" class="px-4 py-2.5 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-bold text-xs shadow-sm transition">
+              Cari
+            </button>
+            <% if (searchQuery) { %>
+              <a href="/catalog" class="px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition">
+                Reset
+              </a>
+            <% } %>
+          </form>
+        </div>
+      </div>
+
+      <!-- Grid Kartu Paket Open Trip -->
+      <% if (trips.length === 0) { %>
+        <div class="bg-white rounded-2xl shadow-argon p-12 text-center">
+          <i class="fa-solid fa-compass text-4xl text-slate-300 mb-3 block"></i>
+          <h3 class="text-base font-extrabold text-argon-dark">Paket Open Trip Tidak Ditemukan</h3>
+          <p class="text-xs text-slate-400 mt-1">Belum ada jadwal trip yang sesuai dengan pencarian Anda.</p>
+        </div>
+      <% } else { %>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <% trips.forEach(trip => { %>
+            <div class="bg-white rounded-2xl shadow-argon border border-slate-100 overflow-hidden flex flex-col justify-between hover:shadow-xl transition duration-300">
+              <div>
+                <!-- Gambar Sampul & Badge Kuota -->
+                <div class="relative h-52 overflow-hidden">
+                  <img
+                    src="<%= trip.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80' %>"
+                    alt="<%= trip.title %>"
+                    class="w-full h-full object-cover hover:scale-105 transition duration-500"
+                  />
+                  <div class="absolute top-3 left-3">
+                    <span class="px-3 py-1 rounded-full bg-argon-dark/80 backdrop-blur-md text-white text-[11px] font-bold flex items-center gap-1.5">
+                      <i class="fa-solid fa-location-dot text-argon-info"></i>
+                      <span><%= trip.destination %></span>
+                    </span>
+                  </div>
+                  <div class="absolute bottom-3 right-3">
+                    <% if (trip.remainingQuota > 0) { %>
+                      <span class="px-3 py-1 rounded-full bg-emerald-500 text-white text-[11px] font-extrabold shadow">
+                        Sisa <%= trip.remainingQuota %> / <%= trip.maxQuota %> Kursi
+                      </span>
+                    <% } else { %>
+                      <span class="px-3 py-1 rounded-full bg-rose-600 text-white text-[11px] font-extrabold shadow">
+                        KUOTA PENUH
+                      </span>
+                    <% } %>
+                  </div>
+                </div>
+
+                <!-- Detail Paket -->
+                <div class="p-6">
+                  <div class="flex items-center gap-2 text-xs text-slate-400 font-semibold mb-1.5">
+                    <i class="fa-regular fa-calendar-check text-argon-primary"></i>
+                    <span>Keberangkatan: <strong class="text-slate-600"><%= formatDate(trip.departureDate) %></strong></span>
+                  </div>
+
+                  <h3 class="text-lg font-extrabold text-argon-dark leading-snug mb-2"><%= trip.title %></h3>
+
+                  <p class="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4">
+                    <%= trip.description %>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Harga & Tombol Pemesanan -->
+              <div class="px-6 pb-6 pt-4 border-t border-slate-100 bg-slate-50/50">
+                <div class="flex items-baseline justify-between mb-4">
+                  <div>
+                    <span class="text-[11px] text-slate-400 font-bold uppercase block">Harga Paket</span>
+                    <span class="text-xl font-extrabold text-argon-primary"><%= formatRupiah(trip.price) %></span>
+                    <span class="text-xs text-slate-400 font-medium">/ orang</span>
+                  </div>
+                </div>
+
+                <% if (trip.remainingQuota > 0) { %>
+                  <% if (currentUser && currentUser.role === 'CUSTOMER') { %>
+                    <a
+                      href="/trips/<%= trip.id %>/book"
+                      class="w-full py-2.5 px-4 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2"
+                    >
+                      <i class="fa-solid fa-paper-plane"></i>
+                      <span>Pesan Paket Trip Ini</span>
+                    </a>
+                  <% } else if (currentUser && currentUser.role === 'ADMIN') { %>
+                    <a
+                      href="/admin/trips/<%= trip.id %>/edit"
+                      class="w-full py-2.5 px-4 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition flex items-center justify-center gap-1.5"
+                    >
+                      <i class="fa-solid fa-pen-to-square"></i>
+                      <span>Edit Paket Ini (Mode Admin)</span>
+                    </a>
+                  <% } else { %>
+                    <a
+                      href="/auth/login"
+                      class="w-full py-2.5 px-4 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5"
+                    >
+                      <i class="fa-solid fa-right-to-bracket"></i>
+                      <span>Login untuk Memesan</span>
+                    </a>
+                  <% } %>
+                <% } else { %>
+                  <button
+                    disabled
+                    class="w-full py-2.5 px-4 rounded-xl bg-slate-200 text-slate-400 font-bold text-xs cursor-not-allowed"
+                  >
+                    Kuota Habis Terpesan
+                  </button>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</div>

@@ -1,0 +1,104 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-[#F7F8FA] text-[#25334A] flex flex-col md:flex-row antialiased">
+
+  <%- include('../partials/sidebar', { activePage: 'transactions' }) %>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <%- include('../partials/topbar') %>
+
+    <main class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#16A6A1]">Audit Keuangan</span>
+          <h1 class="text-2xl font-extrabold text-[#172B4D] mt-1">Data Booking & Transaksi</h1>
+          <p class="text-xs text-[#718096] mt-0.5">Pemantauan seluruh pesanan dan status invoice pelanggan.</p>
+        </div>
+
+        <!-- Filter Status Tab Sesuai Design System -->
+        <div class="flex items-center gap-2 bg-white p-1 rounded-2xl border border-[#E5EAF0] shadow-subtle">
+          <a href="/admin/transactions" class="px-3 py-1.5 rounded-xl text-xs font-bold transition <%= !statusFilter ? 'bg-[#172B4D] text-white' : 'text-[#718096] hover:text-[#172B4D]' %>">
+            Semua
+          </a>
+          <a href="/admin/transactions?status=PAID" class="px-3 py-1.5 rounded-xl text-xs font-bold transition <%= statusFilter === 'PAID' ? 'bg-[#16A37B] text-white' : 'text-[#718096] hover:text-[#172B4D]' %>">
+            PAID
+          </a>
+          <a href="/admin/transactions?status=PENDING" class="px-3 py-1.5 rounded-xl text-xs font-bold transition <%= statusFilter === 'PENDING' ? 'bg-[#E6A23C] text-white' : 'text-[#718096] hover:text-[#172B4D]' %>">
+            PENDING
+          </a>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-[#E5EAF0] shadow-subtle overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-[#F7F8FA] border-b border-[#E5EAF0] text-[11px] font-bold uppercase tracking-wider text-[#718096]">
+                <th class="py-3 px-5">Tanggal</th>
+                <th class="py-3 px-5">Kode Booking</th>
+                <th class="py-3 px-5">Customer</th>
+                <th class="py-3 px-5">Paket Trip</th>
+                <th class="py-3 px-5">Metode Bayar</th>
+                <th class="py-3 px-5 text-right">Peserta</th>
+                <th class="py-3 px-5 text-right">Total Tagihan</th>
+                <th class="py-3 px-5 text-center">Status</th>
+                <th class="py-3 px-5 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#E5EAF0] text-xs">
+              <% if (bookings.length === 0) { %>
+                <tr>
+                  <td colspan="9" class="py-10 text-center text-[#718096]">Tidak ada transaksi ditemukan.</td>
+                </tr>
+              <% } else { %>
+                <% bookings.forEach((b) => { %>
+                  <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3.5 px-5 text-[#718096] whitespace-nowrap"><%= formatDate(b.bookingDate) %></td>
+                    <td class="py-3.5 px-5 font-mono font-bold text-[#172B4D] whitespace-nowrap"><%= b.bookingCode %></td>
+                    <td class="py-3.5 px-5">
+                      <div class="font-bold text-[#172B4D]"><%= b.user.name %></div>
+                      <div class="text-[11px] text-[#718096]"><%= b.user.email %></div>
+                    </td>
+                    <td class="py-3.5 px-5 font-medium text-[#25334A]"><%= b.trip.title %></td>
+                    <td class="py-3.5 px-5 text-[#718096]"><%= b.transaction ? b.transaction.paymentMethod : '-' %></td>
+                    <td class="py-3.5 px-5 text-right font-semibold tabular-nums"><%= b.participants %></td>
+                    <td class="py-3.5 px-5 text-right font-extrabold text-[#172B4D] tabular-nums whitespace-nowrap">
+                      <%= formatRupiah(b.totalAmount) %>
+                    </td>
+                    <td class="py-3.5 px-5 text-center">
+                      <% if (b.status === 'PAID') { %>
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-[#16A37B] border border-emerald-200 text-[10px] font-bold">PAID</span>
+                      <% } else { %>
+                        <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-[#E6A23C] border border-amber-200 text-[10px] font-bold"><%= b.status %></span>
+                      <% } %>
+                    </td>
+                    <td class="py-3.5 px-5 text-center whitespace-nowrap">
+                      <div class="inline-flex items-center gap-1.5">
+                        <a
+                          href="/bookings/<%= b.id %>/payment"
+                          class="px-2.5 py-1 rounded-lg border border-[#E5EAF0] text-[#172B4D] hover:bg-slate-100 font-bold text-[11px]"
+                        >
+                          Sandbox
+                        </a>
+                        <a
+                          href="/bookings/<%= b.id %>/invoice"
+                          class="px-2.5 py-1 rounded-lg bg-[#16A6A1] text-white hover:bg-[#128884] font-bold text-[11px]"
+                        >
+                          Invoice
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</body>
+</html>

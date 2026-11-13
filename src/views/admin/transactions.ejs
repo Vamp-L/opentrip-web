@@ -1,0 +1,118 @@
+<%- include('../partials/head', { title: title }) %>
+
+<div class="min-h-screen flex flex-col lg:pl-72">
+  <!-- Background Header Argon -->
+  <div class="fixed top-0 left-0 right-0 h-72 bg-gradient-to-r from-argon-primary to-argon-info -z-10"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col">
+    <%- include('../partials/navbar', { pageTitle: pageTitle }) %>
+
+    <main class="px-6 pb-10 flex-1">
+      <div class="bg-white rounded-2xl shadow-argon border border-slate-100 overflow-hidden">
+        <!-- Header & Filter Status -->
+        <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-extrabold text-argon-dark">Manajemen Transaksi &amp; Invoice</h2>
+            <p class="text-xs text-slate-400">Daftar seluruh pesanan Customer beserta fitur unduh struk Invoice PDF resmi.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5">
+            <a href="/admin/transactions?status=ALL"
+               class="px-3 py-1.5 rounded-xl text-xs font-bold transition <%= statusFilter === 'ALL' ? 'bg-argon-primary text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' %>">
+              Semua
+            </a>
+            <a href="/admin/transactions?status=PAID"
+               class="px-3 py-1.5 rounded-xl text-xs font-bold transition <%= statusFilter === 'PAID' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' %>">
+              PAID (Lunas)
+            </a>
+            <a href="/admin/transactions?status=PENDING"
+               class="px-3 py-1.5 rounded-xl text-xs font-bold transition <%= statusFilter === 'PENDING' ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-700 hover:bg-amber-100' %>">
+              PENDING
+            </a>
+            <a href="/admin/transactions?status=FAILED"
+               class="px-3 py-1.5 rounded-xl text-xs font-bold transition <%= statusFilter === 'FAILED' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100' %>">
+              FAILED
+            </a>
+          </div>
+        </div>
+
+        <!-- Tabel Transaksi Admin -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                <th class="py-3.5 px-6">No. Invoice &amp; VA</th>
+                <th class="py-3.5 px-4">Pemesan (Customer)</th>
+                <th class="py-3.5 px-4">Paket Open Trip</th>
+                <th class="py-3.5 px-4 text-center">Peserta</th>
+                <th class="py-3.5 px-4">Total Bayar</th>
+                <th class="py-3.5 px-4 text-center">Status</th>
+                <th class="py-3.5 px-6 text-right">Cetak Struk</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-xs">
+              <% if (transactions.length === 0) { %>
+                <tr>
+                  <td colspan="7" class="py-12 text-center text-slate-400">
+                    Belum ada data transaksi untuk filter ini.
+                  </td>
+                </tr>
+              <% } %>
+
+              <% transactions.forEach(trx => { %>
+                <tr class="hover:bg-slate-50/80 transition">
+                  <td class="py-4 px-6">
+                    <span class="font-extrabold text-argon-dark block"><%= trx.bookingCode %></span>
+                    <span class="text-[11px] text-slate-400">VA: <%= trx.payment ? trx.payment.referenceCode : '-' %></span>
+                  </td>
+
+                  <td class="py-4 px-4">
+                    <p class="font-bold text-argon-dark"><%= trx.user.name %></p>
+                    <p class="text-[11px] text-slate-400"><%= trx.user.email %></p>
+                  </td>
+
+                  <td class="py-4 px-4">
+                    <p class="font-bold text-slate-700"><%= trx.trip.title %></p>
+                    <p class="text-[11px] text-slate-400">Berangkat: <%= formatDate(trx.trip.departureDate) %></p>
+                  </td>
+
+                  <td class="py-4 px-4 text-center font-bold text-slate-700">
+                    <%= trx.participants %> Pax
+                  </td>
+
+                  <td class="py-4 px-4 font-extrabold text-argon-primary">
+                    <%= formatRupiah(trx.totalAmount) %>
+                  </td>
+
+                  <td class="py-4 px-4 text-center">
+                    <span class="px-3 py-1 rounded-full text-[11px] font-extrabold <%= trx.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : (trx.status === 'PENDING' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700') %>">
+                      <%= trx.status %>
+                    </span>
+                  </td>
+
+                  <td class="py-4 px-6 text-right">
+                    <% if (trx.status === 'PAID') { %>
+                      <a
+                        href="/transactions/<%= trx.id %>/invoice-pdf"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-bold text-xs shadow-sm transition"
+                      >
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>Cetak Invoice PDF</span>
+                      </a>
+                    <% } else { %>
+                      <span class="text-[11px] text-slate-400 italic">Menunggu Lunas</span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</div>

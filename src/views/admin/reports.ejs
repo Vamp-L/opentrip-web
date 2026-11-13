@@ -1,0 +1,248 @@
+<%- include('../partials/head', { title: title }) %>
+
+<div class="min-h-screen flex flex-col lg:pl-72">
+  <!-- Background Header Argon -->
+  <div class="fixed top-0 left-0 right-0 h-72 bg-gradient-to-r from-argon-primary to-argon-info -z-10"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col">
+    <%- include('../partials/navbar', { pageTitle: pageTitle }) %>
+
+    <main class="px-6 pb-10 flex-1">
+      <%
+        const exportQuery = `start_date=${encodeURIComponent(startDate || '')}&end_date=${encodeURIComponent(endDate || '')}`;
+      %>
+
+      <!-- 1. Ringkasan Kartu (Summary Cards) Berdasarkan Periode Terpilih -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+        <div class="bg-white rounded-2xl p-6 shadow-argon border border-slate-100 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Pendapatan / Omzet</p>
+            <h3 class="text-2xl font-extrabold text-argon-dark mt-1"><%= formatRupiah(summary.totalRevenue) %></h3>
+            <p class="text-[11px] text-emerald-600 font-semibold mt-1.5">
+              <i class="fa-solid fa-circle-check mr-1"></i>
+              <%= (startDate || endDate) ? 'Sesuai rentang tanggal filter' : 'Akumulasi seluruh periode' %>
+            </p>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-md flex-shrink-0">
+            <i class="fa-solid fa-money-bill-trend-up text-xl"></i>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-argon border border-slate-100 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Transaksi Lunas</p>
+            <h3 class="text-2xl font-extrabold text-argon-dark mt-1"><%= summary.totalTransactions %> Transaksi</h3>
+            <p class="text-[11px] text-argon-primary font-semibold mt-1.5">
+              <i class="fa-solid fa-file-invoice-dollar mr-1"></i> Berstatus PAID
+            </p>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-argon-primary to-indigo-400 text-white flex items-center justify-center shadow-md flex-shrink-0">
+            <i class="fa-solid fa-receipt text-xl"></i>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-argon border border-slate-100 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Peserta (Pax)</p>
+            <h3 class="text-2xl font-extrabold text-argon-dark mt-1"><%= summary.totalParticipants %> Orang</h3>
+            <p class="text-[11px] text-amber-600 font-semibold mt-1.5">
+              <i class="fa-solid fa-users mr-1"></i> Peserta keberangkatan lunas
+            </p>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center shadow-md flex-shrink-0">
+            <i class="fa-solid fa-user-group text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Panel Filter Rentang Tanggal & Tombol Ekspor PDF / Excel -->
+      <div class="bg-white rounded-2xl shadow-argon border border-slate-100 p-6 mb-6">
+        <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-5">
+          <form action="/admin/reports" method="GET" class="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">
+                <i class="fa-regular fa-calendar mr-1 text-argon-primary"></i> Tanggal Mulai (Start Date)
+              </label>
+              <input
+                type="date"
+                name="start_date"
+                value="<%= startDate %>"
+                class="w-full px-3.5 py-2.5 text-xs font-bold text-argon-dark rounded-xl border border-slate-200 focus:outline-none focus:border-argon-primary focus:ring-2 focus:ring-argon-primary/20"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">
+                <i class="fa-regular fa-calendar-check mr-1 text-argon-primary"></i> Tanggal Akhir (End Date)
+              </label>
+              <input
+                type="date"
+                name="end_date"
+                value="<%= endDate %>"
+                class="w-full px-3.5 py-2.5 text-xs font-bold text-argon-dark rounded-xl border border-slate-200 focus:outline-none focus:border-argon-primary focus:ring-2 focus:ring-argon-primary/20"
+              />
+            </div>
+
+            <div class="flex items-end gap-2">
+              <button
+                type="submit"
+                class="flex-1 py-2.5 px-4 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5"
+              >
+                <i class="fa-solid fa-filter"></i>
+                <span>Terapkan Filter</span>
+              </button>
+
+              <% if (startDate || endDate) { %>
+                <a
+                  href="/admin/reports"
+                  class="py-2.5 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition"
+                  title="Reset Filter Tanggal"
+                >
+                  <i class="fa-solid fa-rotate-left"></i> Reset
+                </a>
+              <% } %>
+            </div>
+          </form>
+
+          <!-- Tombol Ekspor Laporan ke PDF & Excel (.xlsx) -->
+          <div class="flex flex-wrap items-center gap-3 pt-4 xl:pt-0 border-t xl:border-t-0 border-slate-100">
+            <a
+              href="/admin/reports/export-pdf?<%= exportQuery %>"
+              class="inline-flex items-center gap-2 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition"
+            >
+              <i class="fa-solid fa-file-pdf text-sm"></i>
+              <span>Ekspor ke PDF</span>
+            </a>
+
+            <a
+              href="/admin/reports/export-excel?<%= exportQuery %>"
+              class="inline-flex items-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition"
+            >
+              <i class="fa-solid fa-file-excel text-sm"></i>
+              <span>Ekspor ke Excel (.xlsx)</span>
+            </a>
+          </div>
+        </div>
+
+        <% if (startDate || endDate) { %>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-500">
+              Menampilkan transaksi berstatus <strong class="text-emerald-600">PAID</strong> untuk periode:
+              <strong class="text-argon-dark"><%= startDate ? formatDate(startDate) : 'Awal' %></strong>
+              s/d
+              <strong class="text-argon-dark"><%= endDate ? formatDate(endDate) : 'Sekarang' %></strong>
+            </span>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- 3. Tabel Rincian Transaksi Penjualan (Status PAID) -->
+      <div class="bg-white rounded-2xl shadow-argon border border-slate-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-extrabold text-argon-dark">Rincian Transaksi Lunas (PAID)</h2>
+            <p class="text-xs text-slate-400">Data di bawah ini merupakan dasar perhitungan laporan keuangan &amp; ekspor dokumen</p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold">
+            <%= bookings.length %> Data Ditemukan
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                <th class="py-3.5 px-5">No</th>
+                <th class="py-3.5 px-4">No. Invoice</th>
+                <th class="py-3.5 px-4">Tanggal Transaksi</th>
+                <th class="py-3.5 px-4">Pemesan (Customer)</th>
+                <th class="py-3.5 px-4">Paket Open Trip</th>
+                <th class="py-3.5 px-4 text-right">Harga / Pax</th>
+                <th class="py-3.5 px-4 text-center">Peserta</th>
+                <th class="py-3.5 px-5 text-right">Total Bayar</th>
+                <th class="py-3.5 px-5 text-center">Invoice</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-xs">
+              <% if (bookings.length === 0) { %>
+                <tr>
+                  <td colspan="9" class="py-12 text-center text-slate-400">
+                    <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
+                    Tidak ada transaksi lunas (PAID) pada rentang tanggal yang dipilih.
+                  </td>
+                </tr>
+              <% } %>
+
+              <% bookings.forEach((item, index) => { %>
+                <tr class="hover:bg-slate-50/80 transition">
+                  <td class="py-4 px-5 font-bold text-slate-400"><%= index + 1 %></td>
+
+                  <td class="py-4 px-4">
+                    <span class="font-extrabold text-argon-dark block"><%= item.bookingCode %></span>
+                    <span class="text-[10px] text-slate-400">VA: <%= item.payment ? item.payment.referenceCode : '-' %></span>
+                  </td>
+
+                  <td class="py-4 px-4 font-medium text-slate-600">
+                    <%= formatDate(item.bookingDate) %>
+                  </td>
+
+                  <td class="py-4 px-4">
+                    <p class="font-bold text-argon-dark"><%= item.user.name %></p>
+                    <p class="text-[11px] text-slate-400"><%= item.user.email %></p>
+                  </td>
+
+                  <td class="py-4 px-4">
+                    <p class="font-bold text-slate-700"><%= item.trip.title %></p>
+                    <p class="text-[11px] text-slate-400"><%= item.trip.destination %></p>
+                  </td>
+
+                  <td class="py-4 px-4 text-right font-medium text-slate-600">
+                    <%= formatRupiah(item.trip.price) %>
+                  </td>
+
+                  <td class="py-4 px-4 text-center font-bold text-slate-700">
+                    <%= item.participants %> Org
+                  </td>
+
+                  <td class="py-4 px-5 text-right font-extrabold text-emerald-600">
+                    <%= formatRupiah(item.totalAmount) %>
+                  </td>
+
+                  <td class="py-4 px-5 text-center">
+                    <a
+                      href="/transactions/<%= item.id %>/invoice-pdf"
+                      class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-argon-primary font-bold text-[11px] transition"
+                    >
+                      <i class="fa-solid fa-file-pdf"></i> PDF
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+
+            <% if (bookings.length > 0) { %>
+              <tfoot>
+                <tr class="bg-emerald-50/80 border-t-2 border-emerald-200 text-xs font-extrabold text-emerald-900">
+                  <td colspan="6" class="py-4 px-5 text-right uppercase tracking-wider">
+                    Grand Total Omzet &amp; Peserta (Status PAID)
+                  </td>
+                  <td class="py-4 px-4 text-center text-sm">
+                    <%= summary.totalParticipants %> Org
+                  </td>
+                  <td class="py-4 px-5 text-right text-sm text-emerald-700">
+                    <%= formatRupiah(summary.totalRevenue) %>
+                  </td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            <% } %>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</div>

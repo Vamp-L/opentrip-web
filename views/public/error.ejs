@@ -1,0 +1,29 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-[#F7F8FA] text-[#25334A] flex flex-col md:flex-row antialiased">
+
+  <%- include('../partials/sidebar', { activePage: 'catalog' }) %>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <%- include('../partials/topbar') %>
+
+    <main class="flex-1 flex items-center justify-center p-6 md:p-12">
+      <div class="max-w-md w-full bg-white rounded-3xl border border-[#E5EAF0] p-8 text-center shadow-subtle">
+        <div class="w-14 h-14 rounded-full bg-[#E8F7F7] text-[#16A6A1] flex items-center justify-center mx-auto mb-4 font-extrabold text-xl">
+          !
+        </div>
+        <h1 class="text-xl font-extrabold text-[#172B4D]"><%= title || 'Pemberitahuan Sistem' %></h1>
+        <p class="text-xs text-[#718096] mt-2 leading-relaxed">
+          <%= message || 'Halaman atau paket yang Anda cari tidak tersedia.' %>
+        </p>
+        <div class="mt-6">
+          <a href="/" class="inline-block px-5 py-2.5 rounded-xl bg-[#16A6A1] hover:bg-[#128884] text-white text-xs font-bold transition shadow-subtle">
+            Kembali ke Katalog
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</body>
+</html>

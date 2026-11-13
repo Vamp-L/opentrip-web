@@ -1,0 +1,147 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-[#F7F8FA] text-[#25334A] flex flex-col md:flex-row antialiased">
+
+  <%- include('../partials/sidebar', { activePage: 'dashboard' }) %>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <%- include('../partials/topbar') %>
+
+    <main class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#16A6A1]">Executive Overview</span>
+          <h1 class="text-2xl font-extrabold text-[#172B4D] mt-1">Admin Dashboard OpenTrip</h1>
+          <p class="text-xs text-[#718096] mt-0.5">Pemantauan performa penjualan, paket trip, dan arus transaksi.</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <a href="/admin/trips/new" class="px-4 py-2.5 rounded-xl bg-[#16A6A1] hover:bg-[#128884] text-white text-xs font-bold shadow-subtle transition">
+            + Tambah Paket Trip
+          </a>
+          <a href="/admin/reports" class="px-4 py-2.5 rounded-xl border border-[#E5EAF0] bg-white text-[#172B4D] hover:bg-slate-50 text-xs font-bold transition shadow-subtle">
+            Laporan Keuangan
+          </a>
+        </div>
+      </div>
+
+      <!-- 4 Kartu Metrik Ringkasan -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white rounded-2xl border border-[#E5EAF0] p-5 shadow-subtle">
+          <div class="flex items-center justify-between text-[#718096] mb-2">
+            <span class="text-xs font-semibold">Total Omzet (PAID)</span>
+            <div class="w-8 h-8 rounded-lg bg-[#E8F7F7] text-[#16A6A1] flex items-center justify-center font-bold text-xs">
+              Rp
+            </div>
+          </div>
+          <div class="text-xl font-extrabold text-[#172B4D] tabular-nums">
+            <%= formatRupiah(metrics.totalRevenue) %>
+          </div>
+          <span class="text-[11px] font-semibold text-[#16A37B] mt-1.5 block">Arus Kas Lunas Terverifikasi</span>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-[#E5EAF0] p-5 shadow-subtle">
+          <div class="flex items-center justify-between text-[#718096] mb-2">
+            <span class="text-xs font-semibold">Peserta Terdaftar</span>
+            <div class="w-8 h-8 rounded-lg bg-slate-100 text-[#172B4D] flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+          </div>
+          <div class="text-xl font-extrabold text-[#172B4D] tabular-nums">
+            <%= metrics.totalParticipants %> Orang
+          </div>
+          <span class="text-[11px] text-[#718096] mt-1.5 block">Total Kursi Terjual</span>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-[#E5EAF0] p-5 shadow-subtle">
+          <div class="flex items-center justify-between text-[#718096] mb-2">
+            <span class="text-xs font-semibold">Transaksi Lunas</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#16A37B] flex items-center justify-center font-bold text-xs">
+              &#10003;
+            </div>
+          </div>
+          <div class="text-xl font-extrabold text-[#16A37B] tabular-nums">
+            <%= metrics.paidCount %> Transaksi
+          </div>
+          <span class="text-[11px] text-[#718096] mt-1.5 block">Pending: <%= metrics.pendingCount %> pesanan</span>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-[#E5EAF0] p-5 shadow-subtle">
+          <div class="flex items-center justify-between text-[#718096] mb-2">
+            <span class="text-xs font-semibold">Paket Aktif</span>
+            <div class="w-8 h-8 rounded-lg bg-slate-100 text-[#172B4D] flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+          </div>
+          <div class="text-xl font-extrabold text-[#172B4D] tabular-nums">
+            <%= metrics.totalTrips %> Paket
+          </div>
+          <span class="text-[11px] text-[#718096] mt-1.5 block">Total <%= metrics.totalUsers %> Customer</span>
+        </div>
+      </div>
+
+      <!-- Tabel Transaksi Terbaru -->
+      <div class="bg-white rounded-3xl border border-[#E5EAF0] shadow-subtle overflow-hidden">
+        <div class="px-6 py-5 border-b border-[#E5EAF0] flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-extrabold text-[#172B4D]">Transaksi Terbaru</h2>
+            <p class="text-xs text-[#718096] mt-0.5">Pantau pesanan yang baru masuk ke sistem OpenTrip.</p>
+          </div>
+          <a href="/admin/transactions" class="text-xs font-bold text-[#16A6A1] hover:underline">
+            Lihat Semua Transaksi &rarr;
+          </a>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-[#F7F8FA] border-b border-[#E5EAF0] text-[11px] font-bold uppercase tracking-wider text-[#718096]">
+                <th class="py-3 px-5">Tanggal</th>
+                <th class="py-3 px-5">Kode Booking</th>
+                <th class="py-3 px-5">Customer</th>
+                <th class="py-3 px-5">Paket Trip</th>
+                <th class="py-3 px-5 text-right">Peserta</th>
+                <th class="py-3 px-5 text-right">Total Tagihan</th>
+                <th class="py-3 px-5 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#E5EAF0] text-xs">
+              <% if (recentBookings.length === 0) { %>
+                <tr>
+                  <td colspan="7" class="py-8 text-center text-[#718096]">Belum ada data pesanan.</td>
+                </tr>
+              <% } else { %>
+                <% recentBookings.forEach((b) => { %>
+                  <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3.5 px-5 text-[#718096] whitespace-nowrap"><%= formatDate(b.bookingDate) %></td>
+                    <td class="py-3.5 px-5 font-mono font-bold text-[#172B4D] whitespace-nowrap"><%= b.bookingCode %></td>
+                    <td class="py-3.5 px-5 font-semibold text-[#172B4D]"><%= b.user.name %></td>
+                    <td class="py-3.5 px-5 text-[#25334A]"><%= b.trip.title %></td>
+                    <td class="py-3.5 px-5 text-right font-semibold tabular-nums"><%= b.participants %></td>
+                    <td class="py-3.5 px-5 text-right font-extrabold text-[#172B4D] tabular-nums whitespace-nowrap"><%= formatRupiah(b.totalAmount) %></td>
+                    <td class="py-3.5 px-5 text-center">
+                      <% if (b.status === 'PAID') { %>
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-[#16A37B] border border-emerald-200 text-[10px] font-bold">PAID</span>
+                      <% } else if (b.status === 'PENDING') { %>
+                        <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-[#E6A23C] border border-amber-200 text-[10px] font-bold">PENDING</span>
+                      <% } else { %>
+                        <span class="px-2.5 py-1 rounded-lg bg-rose-50 text-[#DC5555] border border-rose-200 text-[10px] font-bold">CANCELLED</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</body>
+</html>

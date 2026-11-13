@@ -1,0 +1,171 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-[#F7F8FA] text-[#25334A] flex flex-col md:flex-row antialiased">
+
+  <%- include('../partials/sidebar', { activePage: 'trips' }) %>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <%- include('../partials/topbar') %>
+
+    <main class="flex-1 p-6 md:p-8 max-w-4xl w-full mx-auto space-y-6">
+
+      <div>
+        <a href="/admin/trips" class="text-xs font-semibold text-[#16A6A1] hover:underline">&larr; Kembali ke Daftar Paket Trip</a>
+        <h1 class="text-2xl font-extrabold text-[#172B4D] mt-2">
+          <%= trip && trip.id ? 'Edit Paket Open Trip' : 'Tambah Paket Open Trip Baru' %>
+        </h1>
+        <p class="text-xs text-[#718096] mt-0.5">Kelola informasi publik dan ketersediaan kuota paket wisata.</p>
+      </div>
+
+      <% if (error) { %>
+        <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-[#DC5555] text-xs font-semibold">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <%
+        const toInputDate = (d) => {
+          if (!d) return '2026-12-01';
+          const dt = new Date(d);
+          if (isNaN(dt.getTime())) return '2026-12-01';
+          return dt.toISOString().slice(0, 10);
+        };
+      %>
+
+      <!-- Form Menjaga Field Backend Asli (title, destination, imageUrl, price, quota, availableQuota, startDate, endDate, description) -->
+      <form
+        action="<%= trip && trip.id ? `/admin/trips/${trip.id}/update` : '/admin/trips' %>"
+        method="POST"
+        class="bg-white rounded-3xl border border-[#E5EAF0] p-6 sm:p-8 shadow-subtle space-y-5"
+      >
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Nama Paket Open Trip</label>
+            <input
+              type="text"
+              name="title"
+              required
+              value="<%= trip ? trip.title : '' %>"
+              placeholder="Contoh: Bromo Midnight Sunrise Adventure"
+              class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Lokasi Destinasi</label>
+            <input
+              type="text"
+              name="destination"
+              required
+              value="<%= trip ? trip.destination : '' %>"
+              placeholder="Contoh: Taman Nasional Bromo, Jawa Timur"
+              class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#172B4D] mb-1.5">URL Foto Destinasi (Unsplash Kualitas Tinggi)</label>
+          <input
+            type="url"
+            name="imageUrl"
+            required
+            value="<%= trip ? trip.imageUrl : 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?auto=format&fit=crop&w=1200&q=80' %>"
+            class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Tarif per Peserta (Rp)</label>
+            <input
+              type="number"
+              name="price"
+              required
+              min="50000"
+              value="<%= trip ? trip.price : 1500000 %>"
+              class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-bold tabular-nums text-right text-[#172B4D] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Total Kuota (Kursi)</label>
+            <input
+              type="number"
+              name="quota"
+              required
+              min="1"
+              value="<%= trip ? trip.quota : 20 %>"
+              class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-bold tabular-nums text-right text-[#172B4D] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Sisa Kuota Tersedia</label>
+            <input
+              type="number"
+              name="availableQuota"
+              required
+              min="0"
+              value="<%= trip && trip.availableQuota !== undefined ? trip.availableQuota : 20 %>"
+              class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-bold tabular-nums text-right text-[#172B4D] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Tanggal Berangkat</label>
+            <input
+              type="date"
+              name="startDate"
+              required
+              value="<%= trip ? toInputDate(trip.startDate) : '2026-11-20' %>"
+              class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Tanggal Kembali</label>
+            <input
+              type="date"
+              name="endDate"
+              required
+              value="<%= trip ? toInputDate(trip.endDate) : '2026-11-23' %>"
+              class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Deskripsi Lengkap & Highlight Perjalanan</label>
+          <textarea
+            name="description"
+            rows="5"
+            required
+            placeholder="Jelaskan fasilitas, titik kumpul, dan rencana perjalanan..."
+            class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+          ><%= trip ? trip.description : '' %></textarea>
+        </div>
+
+        <div class="pt-3 flex items-center gap-3">
+          <button
+            type="submit"
+            class="px-6 py-3.5 rounded-xl bg-[#16A6A1] hover:bg-[#128884] text-white text-xs font-bold shadow-subtle transition"
+          >
+            Simpan Paket Open Trip
+          </button>
+          <a
+            href="/admin/trips"
+            class="px-5 py-3.5 rounded-xl border border-[#E5EAF0] text-[#718096] text-xs font-bold hover:bg-slate-50 transition"
+          >
+            Batal
+          </a>
+        </div>
+      </form>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</body>
+</html>

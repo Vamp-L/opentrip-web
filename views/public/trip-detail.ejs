@@ -1,0 +1,237 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-[#F7F8FA] text-[#25334A] flex flex-col md:flex-row antialiased">
+
+  <%- include('../partials/sidebar', { activePage: 'catalog' }) %>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <%- include('../partials/topbar') %>
+
+    <main class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <!-- Breadcrumb Navigation -->
+      <nav class="flex items-center gap-2 text-xs font-semibold text-[#718096]">
+        <a href="/" class="hover:text-[#16A6A1] transition">Katalog Open Trip</a>
+        <span>/</span>
+        <span class="text-[#172B4D] truncate"><%= trip.title %></span>
+      </nav>
+
+      <% if (error) { %>
+        <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-[#DC5555] text-xs font-semibold">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <!-- Grid Detail 2 Kolom (Kiri: Informasi & Foto, Kanan: Booking Card Sticky) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+
+        <!-- Kolom Kiri (2/3) -->
+        <div class="lg:col-span-2 space-y-6">
+
+          <!-- Foto Utama & Badge -->
+          <div class="bg-white rounded-3xl border border-[#E5EAF0] overflow-hidden shadow-subtle">
+            <div class="relative aspect-card w-full overflow-hidden bg-slate-100">
+              <img
+                src="<%= trip.imageUrl %>"
+                alt="<%= trip.title %>"
+                class="w-full h-full object-cover"
+              />
+              <div class="absolute top-4 left-4 px-3.5 py-1.5 rounded-lg bg-black/60 backdrop-blur-md text-white text-xs font-semibold flex items-center gap-2 shadow-sm">
+                <svg class="w-4 h-4 text-[#16A6A1]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                </svg>
+                <span><%= trip.destination %></span>
+              </div>
+
+              <div class="absolute top-4 right-4 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-md text-white text-xs font-bold tabular-nums">
+                Tersedia <%= trip.availableQuota %> dari <%= trip.quota %> Kursi
+              </div>
+            </div>
+
+            <!-- Konten Deskripsi -->
+            <div class="p-6 md:p-8">
+              <h1 class="text-2xl md:text-3xl font-extrabold text-[#172B4D] leading-tight">
+                <%= trip.title %>
+              </h1>
+
+              <!-- Quick Info Specs -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 p-4 rounded-2xl bg-[#F7F8FA] border border-[#E5EAF0] text-xs">
+                <div>
+                  <span class="text-[#718096] block">Keberangkatan</span>
+                  <strong class="text-[#172B4D] text-sm mt-0.5 block"><%= formatDate(trip.startDate) %></strong>
+                </div>
+                <div>
+                  <span class="text-[#718096] block">Selesai Trip</span>
+                  <strong class="text-[#172B4D] text-sm mt-0.5 block"><%= formatDate(trip.endDate) %></strong>
+                </div>
+                <div>
+                  <span class="text-[#718096] block">Tarif per Peserta</span>
+                  <strong class="text-[#16A6A1] text-sm mt-0.5 block tabular-nums"><%= formatRupiah(trip.price) %></strong>
+                </div>
+              </div>
+
+              <!-- Deskripsi Paket -->
+              <div class="mt-8">
+                <h2 class="text-base font-extrabold text-[#172B4D] mb-3">Deskripsi & Highlight Perjalanan</h2>
+                <p class="text-sm text-[#718096] leading-relaxed whitespace-pre-line">
+                  <%= trip.description %>
+                </p>
+              </div>
+
+              <!-- Fasilitas Paket -->
+              <div class="mt-8 pt-6 border-t border-[#E5EAF0]">
+                <h3 class="text-sm font-extrabold text-[#172B4D] mb-4">Fasilitas Termasuk (All-In):</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-[#25334A]">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-full bg-[#E8F7F7] text-[#16A6A1] flex items-center justify-center font-bold text-xs shrink-0">&#10003;</div>
+                    <span>Transportasi Lokal & Akomodasi Nyaman</span>
+                  </div>
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-full bg-[#E8F7F7] text-[#16A6A1] flex items-center justify-center font-bold text-xs shrink-0">&#10003;</div>
+                    <span>Tiket Masuk Semua Objek Wisata Terjadwal</span>
+                  </div>
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-full bg-[#E8F7F7] text-[#16A6A1] flex items-center justify-center font-bold text-xs shrink-0">&#10003;</div>
+                    <span>Tour Leader & Pemandu Lokal Berlisensi</span>
+                  </div>
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-full bg-[#E8F7F7] text-[#16A6A1] flex items-center justify-center font-bold text-xs shrink-0">&#10003;</div>
+                    <span>Dokumentasi Foto & Video Eksklusif</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trip Lainnya -->
+          <% if (otherTrips && otherTrips.length > 0) { %>
+            <div class="pt-4">
+              <h3 class="text-lg font-extrabold text-[#172B4D] mb-4">Paket Open Trip Lainnya</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <% otherTrips.slice(0, 2).forEach((ot) => { %>
+                  <a href="/trips/<%= ot.id %>" class="bg-white rounded-2xl border border-[#E5EAF0] p-4 flex gap-4 hover:shadow-cardHover transition duration-200 group">
+                    <img src="<%= ot.imageUrl %>" alt="<%= ot.title %>" class="w-24 aspect-card rounded-xl object-cover shrink-0" />
+                    <div class="flex flex-col justify-between">
+                      <div>
+                        <span class="text-[10px] font-bold text-[#16A6A1]"><%= ot.destination %></span>
+                        <h4 class="text-xs font-bold text-[#172B4D] group-hover:text-[#16A6A1] transition line-clamp-1 mt-0.5"><%= ot.title %></h4>
+                      </div>
+                      <span class="text-xs font-extrabold text-[#172B4D] tabular-nums"><%= formatRupiah(ot.price) %></span>
+                    </div>
+                  </a>
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
+
+        </div>
+
+        <!-- Kolom Kanan (1/3): Booking Card Sticky -->
+        <div class="bg-white rounded-3xl border border-[#E5EAF0] p-6 shadow-subtle sticky top-24">
+          <div class="flex items-baseline justify-between border-b border-[#E5EAF0] pb-4">
+            <div>
+              <span class="text-xs text-[#718096]">Mulai dari</span>
+              <div class="text-2xl font-extrabold text-[#172B4D] tabular-nums mt-0.5">
+                <%= formatRupiah(trip.price) %>
+              </div>
+            </div>
+            <span class="text-xs font-semibold text-[#718096]">/ peserta</span>
+          </div>
+
+          <% if (trip.availableQuota > 0) { %>
+            <!-- Form Booking Tetap Mempertahankan Payload Backend Existing (tripId, participants, paymentMethod) -->
+            <form action="/bookings" method="POST" class="mt-6 space-y-4">
+              <input type="hidden" name="tripId" value="<%= trip.id %>" />
+
+              <div>
+                <label for="participants" class="block text-xs font-bold text-[#172B4D] mb-1.5">
+                  Jumlah Peserta (Kursi)
+                </label>
+                <div class="relative">
+                  <input
+                    type="number"
+                    id="participants"
+                    name="participants"
+                    min="1"
+                    max="<%= trip.availableQuota %>"
+                    value="1"
+                    required
+                    oninput="updateSubtotal()"
+                    class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-bold text-[#172B4D] tabular-nums focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+                  />
+                  <span class="absolute inset-y-0 right-0 pr-4 flex items-center text-xs text-[#718096] pointer-events-none">
+                    Pax
+                  </span>
+                </div>
+                <span class="text-[11px] text-[#718096] mt-1 block">
+                  Maksimal pemesanan <%= trip.availableQuota %> kursi tersisa.
+                </span>
+              </div>
+
+              <div>
+                <label for="paymentMethod" class="block text-xs font-bold text-[#172B4D] mb-1.5">
+                  Metode Pembayaran (NusaPay Sandbox)
+                </label>
+                <select
+                  id="paymentMethod"
+                  name="paymentMethod"
+                  class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] bg-white focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+                >
+                  <option value="QRIS NusaPay">QRIS Instan (NusaPay)</option>
+                  <option value="Virtual Account BCA">Virtual Account BCA</option>
+                  <option value="Virtual Account Mandiri">Virtual Account Mandiri</option>
+                  <option value="E-Wallet GoPay / OVO">E-Wallet (GoPay / OVO / DANA)</option>
+                </select>
+              </div>
+
+              <!-- Rincian Biaya -->
+              <div class="p-4 rounded-2xl bg-[#F7F8FA] border border-[#E5EAF0] space-y-2 text-xs">
+                <div class="flex justify-between text-[#718096]">
+                  <span>Harga Satuan</span>
+                  <span class="tabular-nums font-semibold text-[#172B4D]"><%= formatRupiah(trip.price) %></span>
+                </div>
+                <div class="flex justify-between text-[#718096]">
+                  <span>Jumlah Peserta</span>
+                  <span id="paxLabel" class="tabular-nums font-semibold text-[#172B4D]">1 Orang</span>
+                </div>
+                <div class="border-t border-[#E5EAF0] pt-2.5 flex justify-between items-center text-sm font-extrabold text-[#172B4D]">
+                  <span>Total Tagihan</span>
+                  <span id="subtotalLabel" class="tabular-nums text-[#16A6A1]"><%= formatRupiah(trip.price) %></span>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="w-full py-3.5 px-6 rounded-xl bg-[#16A6A1] hover:bg-[#128884] text-white font-bold text-xs shadow-subtle transition flex items-center justify-center gap-2"
+              >
+                <span>Pesan Sekarang</span>
+                <span class="text-sm">&rarr;</span>
+              </button>
+            </form>
+          <% } else { %>
+            <div class="mt-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-center">
+              <p class="text-xs font-bold text-[#DC5555]">Kuota Paket Ini Sudah Penuh</p>
+              <p class="text-[11px] text-[#718096] mt-1">Silakan pilih tanggal atau destinasi Open Trip lainnya.</p>
+            </div>
+          <% } %>
+        </div>
+
+      </div>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+
+  <script>
+    const unitPrice = <%= trip.price %>;
+    function updateSubtotal() {
+      const paxInput = document.getElementById('participants');
+      let pax = parseInt(paxInput.value, 10);
+      if (isNaN(pax) || pax < 1) pax = 1;
+      const total = unitPrice * pax;
+      document.getElementById('paxLabel').textContent = pax + ' Orang';
+      document.getElementById('subtotalLabel').textContent = 'Rp ' + total.toLocaleString('id-ID');
+    }
+  </script>
+</body>
+</html>

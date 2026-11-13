@@ -1,0 +1,64 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-[#F7F8FA] text-[#25334A] flex flex-col md:flex-row antialiased">
+
+  <%- include('../partials/sidebar', { activePage: 'catalog' }) %>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <%- include('../partials/topbar') %>
+
+    <main class="flex-1 p-6 md:p-8 max-w-4xl w-full mx-auto space-y-6">
+      <div>
+        <a href="/trips/<%= trip.id %>" class="text-xs font-semibold text-[#16A6A1] hover:underline">&larr; Kembali ke Detail Paket</a>
+        <h1 class="text-2xl font-extrabold text-[#172B4D] mt-2">Konfirmasi Pemesanan Open Trip</h1>
+        <p class="text-xs text-[#718096] mt-0.5">Periksa kembali detail peserta dan metode pembayaran Anda.</p>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-[#E5EAF0] p-6 sm:p-8 shadow-subtle">
+        <div class="flex flex-col sm:flex-row gap-5 pb-6 border-b border-[#E5EAF0]">
+          <img src="<%= trip.imageUrl %>" alt="<%= trip.title %>" class="w-full sm:w-48 aspect-card object-cover rounded-2xl" />
+          <div class="flex-1">
+            <span class="text-xs font-bold text-[#16A6A1]"><%= trip.destination %></span>
+            <h2 class="text-lg font-extrabold text-[#172B4D] mt-1"><%= trip.title %></h2>
+            <p class="text-xs text-[#718096] mt-1">Keberangkatan: <%= formatDate(trip.startDate) %> - <%= formatDate(trip.endDate) %></p>
+            <p class="text-sm font-extrabold text-[#172B4D] tabular-nums mt-3"><%= formatRupiah(trip.price) %> <span class="text-xs text-[#718096] font-normal">/ pax</span></p>
+          </div>
+        </div>
+
+        <form action="/bookings" method="POST" class="mt-6 space-y-5">
+          <input type="hidden" name="tripId" value="<%= trip.id %>" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Jumlah Peserta</label>
+              <input
+                type="number"
+                name="participants"
+                min="1"
+                max="<%= trip.availableQuota %>"
+                value="<%= participants %>"
+                required
+                class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-bold tabular-nums text-[#172B4D] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#172B4D] mb-1.5">Metode Pembayaran</label>
+              <select name="paymentMethod" class="w-full px-4 py-3 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] bg-white focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]">
+                <option value="QRIS NusaPay">QRIS Instan (NusaPay)</option>
+                <option value="Virtual Account BCA">Virtual Account BCA</option>
+                <option value="Virtual Account Mandiri">Virtual Account Mandiri</option>
+                <option value="E-Wallet GoPay / OVO">E-Wallet (GoPay / OVO / DANA)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-[#16A6A1] hover:bg-[#128884] text-white font-bold text-xs shadow-subtle transition flex items-center justify-center gap-2">
+            <span>Konfirmasi Pesanan & Buka Pembayaran</span>
+            <span class="text-sm">&rarr;</span>
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-white text-[#25334A] flex flex-col antialiased">
+
+  <!-- Split-Screen 50:50 Sesuai Referensi Gambar 01 -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+
+    <!-- Panel Kiri — Travel Branding (Foto Lanskap Eksotis Sesuai Referensi) -->
+    <div class="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden bg-[#172B4D] text-white">
+      <img
+        src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1600&q=85"
+        alt="OpenTrip Adventure"
+        class="absolute inset-0 w-full h-full object-cover object-center"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#172B4D]/90 via-[#172B4D]/30 to-[#172B4D]/40"></div>
+
+      <!-- Header Kiri: Logo OpenTrip -->
+      <div class="relative z-10 flex items-center gap-2.5">
+        <svg class="w-8 h-8 shrink-0" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 4L32 28H4L18 4Z" fill="#16A6A1"/>
+          <path d="M18 4L25 28H11L18 4Z" fill="#20B2AA" fill-opacity="0.8"/>
+          <path d="M18 4L18 28H4L18 4Z" fill="#0D8B87" fill-opacity="0.5"/>
+          <path d="M18 14L28 28H8L18 14Z" fill="#4DD0E1" fill-opacity="0.6"/>
+        </svg>
+        <span class="text-2xl font-extrabold tracking-tight text-white">OpenTrip</span>
+      </div>
+
+      <!-- Konten Kiri Sesuai Referensi -->
+      <div class="relative z-10 space-y-8 my-auto">
+        <div>
+          <h1 class="text-4xl xl:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            Mulai Petualangan,<br/>Bersama OpenTrip
+          </h1>
+          <p class="mt-4 text-slate-200 text-sm xl:text-base font-normal max-w-md leading-relaxed">
+            Bergabunglah dengan komunitas traveler terbesar untuk menjelajahi keindahan Nusantara.
+          </p>
+        </div>
+
+        <!-- 3 Poin Keunggulan -->
+        <div class="space-y-4 pt-2">
+          <div class="flex items-center gap-3.5">
+            <div class="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </div>
+            <span class="text-sm font-semibold text-white">Paket Open Trip Terpercaya</span>
+          </div>
+
+          <div class="flex items-center gap-3.5">
+            <div class="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <span class="text-sm font-semibold text-white">Transaksi Aman & Mudah</span>
+          </div>
+
+          <div class="flex items-center gap-3.5">
+            <div class="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414" />
+              </svg>
+            </div>
+            <span class="text-sm font-semibold text-white">Customer Support 24/7</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative z-10 text-xs text-slate-300">
+        &copy; <%= new Date().getFullYear() %> OpenTrip Indonesia.
+      </div>
+    </div>
+
+    <!-- Panel Kanan — Register Form Sesuai Referensi Gambar 01 -->
+    <div class="flex flex-col justify-between p-6 sm:p-12 lg:p-16 bg-white overflow-y-auto">
+      <div class="flex justify-end">
+        <a href="/" class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#718096] hover:text-[#172B4D] transition">
+          <span>&larr;</span>
+          <span>Kembali ke Beranda</span>
+        </a>
+      </div>
+
+      <div class="w-full max-w-md mx-auto my-auto py-6">
+        <div class="text-center mb-6">
+          <div class="inline-flex items-center gap-2 mb-3">
+            <svg class="w-9 h-9" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 4L32 28H4L18 4Z" fill="#16A6A1"/>
+              <path d="M18 4L25 28H11L18 4Z" fill="#20B2AA" fill-opacity="0.8"/>
+              <path d="M18 4L18 28H4L18 4Z" fill="#0D8B87" fill-opacity="0.5"/>
+              <path d="M18 14L28 28H8L18 14Z" fill="#4DD0E1" fill-opacity="0.6"/>
+            </svg>
+            <span class="text-2xl font-extrabold tracking-tight text-[#172B4D]">OpenTrip</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-[#172B4D]">Daftar Akun Baru</h2>
+          <p class="text-xs sm:text-sm text-[#718096] mt-1.5">Bergabunglah dengan OpenTrip untuk mulai merencanakan perjalananmu.</p>
+        </div>
+
+        <!-- Tab Login & Daftar -->
+        <div class="flex border-b border-[#E5EAF0] mb-6">
+          <a href="/login" class="flex-1 text-center pb-3 text-sm font-semibold text-[#718096] hover:text-[#172B4D] transition">
+            Login
+          </a>
+          <a href="/register" class="flex-1 text-center pb-3 text-sm font-bold text-[#16A6A1] border-b-2 border-[#16A6A1]">
+            Daftar
+          </a>
+        </div>
+
+        <% if (error) { %>
+          <div class="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-[#DC5555] text-xs font-semibold">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <!-- Form Register Persis Backend Existing (name, email, password, confirmPassword) -->
+        <form action="/register" method="POST" class="space-y-4">
+          <div>
+            <label for="name" class="block text-xs font-bold text-[#172B4D] mb-1.5">Nama Lengkap</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#718096]">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                placeholder="Contoh: Rina Wulandari"
+                class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E5EAF0] bg-white text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1] transition"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="email" class="block text-xs font-bold text-[#172B4D] mb-1.5">Alamat Email</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#718096]">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="nama@email.com"
+                class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E5EAF0] bg-white text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1] transition"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label for="password" class="block text-xs font-bold text-[#172B4D] mb-1.5">Password</label>
+              <div class="position-relative relative" style="position: relative;">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  required
+                  minlength="6"
+                  placeholder="Min. 6 karakter"
+                  class="w-full pl-4 pr-10 py-3 rounded-xl border border-[#E5EAF0] bg-white text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1] transition"
+                />
+                <button
+                  type="button"
+                  id="togglePassword"
+                  class="toggle-eye"
+                  style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #718096; display: flex; align-items: center; background: none; border: none; padding: 0;"
+                >
+                  <svg class="eye-icon w-4 h-4 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label for="confirmPassword" class="block text-xs font-bold text-[#172B4D] mb-1.5">Ulangi Password</label>
+              <div class="position-relative relative" style="position: relative;">
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  required
+                  minlength="6"
+                  placeholder="Ulangi password"
+                  class="w-full pl-4 pr-10 py-3 rounded-xl border border-[#E5EAF0] bg-white text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1] transition"
+                />
+                <button
+                  type="button"
+                  id="toggleConfirmPassword"
+                  class="toggle-eye"
+                  style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #718096; display: flex; align-items: center; background: none; border: none; padding: 0;"
+                >
+                  <svg class="eye-icon w-4 h-4 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full mt-3 py-3 px-6 rounded-xl bg-[#172B4D] hover:bg-[#243B5A] text-white font-bold text-xs shadow-subtle transition flex items-center justify-center gap-2"
+          >
+            <span>Daftar Sekarang</span>
+            <span class="text-sm">&rarr;</span>
+          </button>
+        </form>
+
+        <p class="text-center text-xs text-[#718096] mt-6">
+          Sudah punya akun?
+          <a href="/login" class="font-bold text-[#16A6A1] hover:underline">Masuk di sini</a>
+        </p>
+      </div>
+
+      <div class="text-center text-[11px] text-[#718096]">
+        Dengan mendaftar, Anda menyetujui Ketentuan Layanan OpenTrip.
+      </div>
+    </div>
+  </main>
+
+  <!-- Script Vanilla JavaScript untuk Toggle Visibility Password & Confirm Password -->
+  <script>
+    function setupPasswordToggle(toggleId, inputId) {
+      const toggleBtn = document.getElementById(toggleId);
+      const input = document.getElementById(inputId);
+      if (!toggleBtn || !input) return;
+
+      toggleBtn.addEventListener('click', function () {
+        const isPassword = input.getAttribute('type') === 'password';
+        if (isPassword) {
+          input.setAttribute('type', 'text');
+          toggleBtn.style.color = '#16A6A1'; // Warna aksen teal saat aktif terlihat
+        } else {
+          input.setAttribute('type', 'password');
+          toggleBtn.style.color = '#718096'; // Warna slate natural saat disembunyikan
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      setupPasswordToggle('togglePassword', 'password');
+      setupPasswordToggle('toggleConfirmPassword', 'confirmPassword');
+    });
+  </script>
+</body>
+</html>

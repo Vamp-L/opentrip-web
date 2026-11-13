@@ -1,0 +1,56 @@
+<header class="relative z-20 flex flex-wrap items-center justify-between px-6 py-4 text-white">
+  <div>
+    <nav class="text-xs font-medium text-white/80 mb-1">
+      <span>OpenTrip</span>
+      <span class="mx-1.5">/</span>
+      <span class="text-white font-semibold"><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Halaman' %></span>
+    </nav>
+    <h1 class="text-xl font-extrabold tracking-tight text-white">
+      <%= typeof pageTitle !== 'undefined' ? pageTitle : 'Dashboard' %>
+    </h1>
+  </div>
+
+  <!-- Navigasi Kanan & Menu Responsif Mobile -->
+  <div class="flex items-center gap-3">
+    <% if (currentUser) { %>
+      <div class="hidden sm:flex items-center gap-2.5 bg-white/15 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/20">
+        <i class="fa-solid fa-circle-user text-white text-base"></i>
+        <span class="text-xs font-semibold"><%= currentUser.name %> (<%= currentUser.role %>)</span>
+      </div>
+      <!-- Tombol Navigasi Cepat untuk Layar Kecil (Mobile) -->
+      <div class="flex lg:hidden items-center gap-2">
+        <% if (currentUser.role === 'ADMIN') { %>
+          <a href="/admin/dashboard" class="px-3 py-2 rounded-xl bg-white/20 text-xs font-semibold">Dashboard</a>
+          <a href="/admin/trips" class="px-3 py-2 rounded-xl bg-white/20 text-xs font-semibold">Trip</a>
+          <a href="/admin/transactions" class="px-3 py-2 rounded-xl bg-white/20 text-xs font-semibold">Transaksi</a>
+          <a href="/admin/reports" class="px-3 py-2 rounded-xl bg-white/20 text-xs font-semibold">Laporan</a>
+        <% } else { %>
+          <a href="/catalog" class="px-3 py-2 rounded-xl bg-white/20 text-xs font-semibold">Katalog</a>
+          <a href="/my-bookings" class="px-3 py-2 rounded-xl bg-white/20 text-xs font-semibold">Pesanan</a>
+        <% } %>
+      </div>
+    <% } else { %>
+      <a href="/auth/login" class="px-4 py-2 rounded-xl bg-white text-argon-primary font-bold text-xs shadow hover:bg-slate-50 transition">
+        <i class="fa-solid fa-lock mr-1"></i> Login
+      </a>
+      <a href="/auth/register" class="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs border border-white/30 transition">
+        Daftar
+      </a>
+    <% } %>
+  </div>
+</header>
+
+<!-- Notifikasi Flash Message -->
+<% if (flash) { %>
+  <div class="px-6 mb-4 relative z-20">
+    <div class="flex items-center justify-between px-4 py-3 rounded-xl shadow-md border text-sm font-medium <%= flash.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800' %>">
+      <div class="flex items-center gap-2.5">
+        <i class="fa-solid <%= flash.type === 'success' ? 'fa-circle-check text-emerald-500' : 'fa-circle-exclamation text-rose-500' %> text-base"></i>
+        <span><%= flash.message %></span>
+      </div>
+      <button onclick="this.parentElement.remove()" class="text-xs opacity-60 hover:opacity-100">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+<% } %>

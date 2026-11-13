@@ -1,0 +1,197 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-[#F7F8FA] text-[#25334A] flex flex-col md:flex-row antialiased">
+
+  <%- include('../partials/sidebar', { activePage: 'reports' }) %>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <%- include('../partials/topbar') %>
+
+    <main class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-[#16A6A1]">Analisis Finansial</span>
+        <h1 class="text-2xl font-extrabold text-[#172B4D] mt-1">Laporan Penjualan &amp; Keuangan</h1>
+        <p class="text-xs text-[#718096] mt-0.5">
+          Rekapitulasi transaksi berstatus LUNAS (PAID) dari database PostgreSQL.
+        </p>
+      </div>
+
+      <!-- Bar Kontrol Filter & Tombol Ekspor PDF & Excel -->
+      <div class="bg-white rounded-3xl border border-[#E5EAF0] p-5 shadow-subtle">
+        <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-4">
+          <!-- Form Filter (start_date & end_date) Menjaga Kontrak Backend Existing -->
+          <form action="/admin/reports" method="GET" class="flex flex-col sm:flex-row sm:items-end gap-3.5 flex-1">
+            <div class="w-full sm:w-48">
+              <label for="start_date" class="block text-xs font-bold text-[#172B4D] mb-1.5">Mulai Tanggal</label>
+              <input
+                type="date"
+                id="start_date"
+                name="start_date"
+                value="<%= start_date %>"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+              />
+            </div>
+
+            <div class="w-full sm:w-48">
+              <label for="end_date" class="block text-xs font-bold text-[#172B4D] mb-1.5">Sampai Tanggal</label>
+              <input
+                type="date"
+                id="end_date"
+                name="end_date"
+                value="<%= end_date %>"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-[#E5EAF0] text-xs font-medium text-[#25334A] focus:outline-none focus:border-[#16A6A1] focus:ring-1 focus:ring-[#16A6A1]"
+              />
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="submit"
+                class="px-5 py-2.5 rounded-xl bg-[#16A6A1] hover:bg-[#128884] text-white text-xs font-bold transition shadow-subtle"
+              >
+                Terapkan Filter
+              </button>
+              <% if (start_date || end_date) { %>
+                <a
+                  href="/admin/reports"
+                  class="px-3.5 py-2.5 rounded-xl border border-[#E5EAF0] text-[#718096] hover:bg-slate-50 text-xs font-bold transition"
+                >
+                  Reset
+                </a>
+              <% } %>
+            </div>
+          </form>
+
+          <!-- Tombol Ekspor PDF & Excel -->
+          <%
+            const queryParams = [];
+            if (start_date) queryParams.push(`start_date=${encodeURIComponent(start_date)}`);
+            if (end_date) queryParams.push(`end_date=${encodeURIComponent(end_date)}`);
+            const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+          %>
+          <div class="flex items-center gap-2.5 pt-2 xl:pt-0 border-t xl:border-t-0 border-[#E5EAF0]">
+            <a
+              href="/admin/reports/export-pdf<%= queryString %>"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#DC5555] hover:bg-rose-700 text-white text-xs font-bold shadow-subtle transition"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span>Ekspor PDF</span>
+            </a>
+
+            <a
+              href="/admin/reports/export-excel<%= queryString %>"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#16A37B] hover:bg-emerald-700 text-white text-xs font-bold shadow-subtle transition"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span>Ekspor Excel</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Kartu Ringkasan Metrik -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="bg-white rounded-3xl border border-[#E5EAF0] p-6 shadow-subtle">
+          <span class="text-xs font-semibold text-[#718096] block">Total Omzet Bersih</span>
+          <div class="text-2xl font-extrabold text-[#172B4D] tabular-nums mt-1.5">
+            <%= formatRupiah(metrics.totalRevenue) %>
+          </div>
+          <span class="text-[11px] text-[#16A37B] font-semibold mt-1 block">Akumulasi Transaksi PAID</span>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-[#E5EAF0] p-6 shadow-subtle">
+          <span class="text-xs font-semibold text-[#718096] block">Total Peserta Terlayani</span>
+          <div class="text-2xl font-extrabold text-[#172B4D] tabular-nums mt-1.5">
+            <%= metrics.totalParticipants %> Orang
+          </div>
+          <span class="text-[11px] text-[#718096] mt-1 block">Peserta Paket Open Trip Lunas</span>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-[#E5EAF0] p-6 shadow-subtle">
+          <span class="text-xs font-semibold text-[#718096] block">Jumlah Transaksi Selesai</span>
+          <div class="text-2xl font-extrabold text-[#16A6A1] tabular-nums mt-1.5">
+            <%= metrics.totalPaidTransactions %> Transaksi
+          </div>
+          <span class="text-[11px] text-[#718096] mt-1 block">Terverifikasi Sistem Pembayaran</span>
+        </div>
+      </div>
+
+      <!-- Tabel Rincian Transaksi PAID -->
+      <div class="bg-white rounded-3xl border border-[#E5EAF0] shadow-subtle overflow-hidden">
+        <div class="px-6 py-5 border-b border-[#E5EAF0] flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-extrabold text-[#172B4D]">Daftar Transaksi Lunas</h2>
+            <p class="text-xs text-[#718096] mt-0.5">
+              Periode: <%= start_date || 'Semua Tanggal' %> s/d <%= end_date || 'Hari Ini' %>
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-[#F7F8FA] border-b border-[#E5EAF0] text-[11px] font-bold uppercase tracking-wider text-[#718096]">
+                <th class="py-3 px-5">Tanggal</th>
+                <th class="py-3 px-5">Kode Booking</th>
+                <th class="py-3 px-5">Customer</th>
+                <th class="py-3 px-5">Paket Open Trip</th>
+                <th class="py-3 px-5">Metode Bayar</th>
+                <th class="py-3 px-5 text-right">Peserta</th>
+                <th class="py-3 px-5 text-right">Total Tagihan</th>
+                <th class="py-3 px-5 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#E5EAF0] text-xs">
+              <% if (paidBookings.length === 0) { %>
+                <tr>
+                  <td colspan="8" class="py-10 text-center text-[#718096]">
+                    Tidak ada transaksi berstatus PAID pada rentang tanggal yang dipilih.
+                  </td>
+                </tr>
+              <% } else { %>
+                <% paidBookings.forEach((b) => { %>
+                  <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3.5 px-5 text-[#718096] whitespace-nowrap"><%= formatDate(b.bookingDate) %></td>
+                    <td class="py-3.5 px-5 font-mono font-bold text-[#172B4D] whitespace-nowrap"><%= b.bookingCode %></td>
+                    <td class="py-3.5 px-5 font-semibold text-[#172B4D]"><%= b.user.name %></td>
+                    <td class="py-3.5 px-5 text-[#25334A]"><%= b.trip.title %></td>
+                    <td class="py-3.5 px-5 text-[#718096]"><%= b.transaction ? b.transaction.paymentMethod : 'NusaPay' %></td>
+                    <td class="py-3.5 px-5 text-right font-semibold tabular-nums"><%= b.participants %></td>
+                    <td class="py-3.5 px-5 text-right font-extrabold text-[#172B4D] tabular-nums whitespace-nowrap">
+                      <%= formatRupiah(b.totalAmount) %>
+                    </td>
+                    <td class="py-3.5 px-5 text-center">
+                      <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-[#16A37B] border border-emerald-200 text-[10px] font-bold">
+                        PAID
+                      </span>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+            <!-- Footer Baris Total Keseluruhan Omzet -->
+            <tfoot>
+              <tr class="bg-[#F7F8FA] border-t-2 border-[#E5EAF0] text-xs font-extrabold text-[#172B4D]">
+                <td colspan="5" class="py-4 px-5 uppercase tracking-wider">Total Keseluruhan Omzet Terfilter</td>
+                <td class="py-4 px-5 text-right tabular-nums"><%= metrics.totalParticipants %> Orang</td>
+                <td class="py-4 px-5 text-right text-sm text-[#16A6A1] tabular-nums whitespace-nowrap">
+                  <%= formatRupiah(metrics.totalRevenue) %>
+                </td>
+                <td class="py-4 px-5 text-center">
+                  <span class="text-[10px] font-bold text-[#16A37B] bg-emerald-50 px-2.5 py-1 rounded-lg">LUNAS</span>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</body>
+</html>

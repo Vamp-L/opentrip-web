@@ -1,0 +1,352 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-[#F7F8FA] text-[#25334A] flex flex-col md:flex-row antialiased">
+
+  <%- include('../partials/sidebar', { activePage: 'mytrip' }) %>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <%- include('../partials/topbar') %>
+
+    <main class="flex-1 p-6 md:p-8 max-w-5xl w-full mx-auto space-y-6">
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8F7F7] text-[#16A6A1] text-xs font-bold uppercase tracking-wider">
+            NusaPay Payment Sandbox
+          </span>
+          <h1 class="text-2xl font-extrabold text-[#172B4D] mt-2">
+            Pembayaran Pesanan #<%= booking.bookingCode %>
+          </h1>
+        </div>
+        <a href="/bookings/my" class="text-xs font-semibold text-[#718096] hover:text-[#16A6A1] transition">
+          &larr; Riwayat Pesanan Saya
+        </a>
+      </div>
+
+      <% if (success) { %>
+        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-[#16A37B] text-xs font-semibold">
+          <%= success %>
+        </div>
+      <% } %>
+
+      <% if (error) { %>
+        <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-[#DC5555] text-xs font-semibold">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Kolom Kiri: Simulator Sandbox -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white rounded-3xl border border-[#E5EAF0] p-6 sm:p-8 shadow-subtle">
+            <div class="flex items-center justify-between pb-5 border-b border-[#E5EAF0]">
+              <div>
+                <h2 class="text-base font-extrabold text-[#172B4D]">Pilih Kanal Pembayaran</h2>
+                <p class="text-xs text-[#718096] mt-0.5">Simulasi pembayaran instan sandbox untuk verifikasi transaksi.</p>
+              </div>
+              <% if (booking.status === 'PAID') { %>
+                <span class="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-[#16A37B] text-xs font-extrabold">
+                  PAID (LUNAS)
+                </span>
+              <% } else { %>
+                <span class="px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-[#E6A23C] text-xs font-extrabold">
+                  PENDING
+                </span>
+              <% } %>
+            </div>
+
+            <% if (booking.status !== 'PAID') { %>
+              <!-- OPSI 1: MIDTRANS SNAP POPUP RESMI -->
+              <div class="mt-6 p-6 rounded-3xl bg-gradient-to-br from-[#172B4D] to-[#243B5A] text-white shadow-premium">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-3 h-3 rounded-full bg-[#16A6A1] animate-ping"></span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#16A6A1]">Metode Resmi Rekomendasi</span>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full bg-white/10 text-[10px] font-semibold text-slate-200">Midtrans Sandbox</span>
+                </div>
+                <h3 class="text-lg font-extrabold text-white">Bayar Menggunakan Midtrans Snap</h3>
+                <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                  Buka pop-up pembayaran resmi Midtrans dengan opsi QRIS, GoPay, ShopeePay, dan Virtual Account semua bank.
+                </p>
+
+                <div class="mt-5 flex flex-col sm:flex-row items-center gap-3">
+                  <button
+                    type="button"
+                    id="payMidtransBtn"
+                    onclick="payWithMidtrans()"
+                    class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#16A6A1] hover:bg-[#128884] text-white font-extrabold text-xs shadow-subtle transition flex items-center justify-center gap-2"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span>Buka Pop-up Midtrans</span>
+                  </button>
+                  <span class="text-[11px] text-slate-300">Dapat disimulasikan lunas langsung lewat pop-up atau Simulator Midtrans.</span>
+                </div>
+              </div>
+
+              <!-- Pembatas / Divider -->
+              <div class="relative my-7 text-center">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-[#E5EAF0]"></div>
+                </div>
+                <span class="relative bg-white px-4 text-xs font-bold uppercase tracking-wider text-[#718096]">
+                  Atau Simulasi Langsung Cepat
+                </span>
+              </div>
+
+              <form action="/bookings/<%= booking.id %>/pay" method="POST" class="space-y-5">
+                <div class="space-y-3">
+                  <% const currentMethod = booking.transaction ? booking.transaction.paymentMethod : 'QRIS NusaPay'; %>
+
+                  <!-- QRIS -->
+                  <label class="flex items-start gap-3.5 p-4 rounded-2xl border border-[#E5EAF0] hover:border-[#16A6A1] cursor-pointer transition bg-white group">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="QRIS NusaPay"
+                      <%= currentMethod.includes('QRIS') ? 'checked' : '' %>
+                      class="mt-1 text-[#16A6A1] focus:ring-[#16A6A1]"
+                    />
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#172B4D] group-hover:text-[#16A6A1] transition">QRIS Instan (NusaPay)</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#E8F7F7] text-[#16A6A1]">Otomatis</span>
+                      </div>
+                      <p class="text-[11px] text-[#718096] mt-1">Scan kode QRIS melalui GoPay, OVO, BCA, atau bank apapun.</p>
+                    </div>
+                  </label>
+
+                  <!-- Virtual Account -->
+                  <label class="flex items-start gap-3.5 p-4 rounded-2xl border border-[#E5EAF0] hover:border-[#16A6A1] cursor-pointer transition bg-white group">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="Virtual Account BCA / Mandiri"
+                      <%= currentMethod.includes('Virtual Account') ? 'checked' : '' %>
+                      class="mt-1 text-[#16A6A1] focus:ring-[#16A6A1]"
+                    />
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#172B4D] group-hover:text-[#16A6A1] transition">Virtual Account (BCA / Mandiri / BNI)</span>
+                        <span class="text-[11px] font-mono text-[#718096]">VA: 88019283741</span>
+                      </div>
+                      <p class="text-[11px] text-[#718096] mt-1">Transfer langsung melalui ATM atau Mobile Banking.</p>
+                    </div>
+                  </label>
+
+                  <!-- E-Wallet -->
+                  <label class="flex items-start gap-3.5 p-4 rounded-2xl border border-[#E5EAF0] hover:border-[#16A6A1] cursor-pointer transition bg-white group">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="E-Wallet (GoPay / OVO / DANA)"
+                      <%= currentMethod.includes('E-Wallet') ? 'checked' : '' %>
+                      class="mt-1 text-[#16A6A1] focus:ring-[#16A6A1]"
+                    />
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#172B4D] group-hover:text-[#16A6A1] transition">E-Wallet (GoPay / OVO / DANA)</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-[#718096]">Sandbox</span>
+                      </div>
+                      <p class="text-[11px] text-[#718096] mt-1">Pembayaran 1 klik menggunakan saldo dompet digital.</p>
+                    </div>
+                  </label>
+                </div>
+
+                <div class="pt-2">
+                  <button
+                    type="submit"
+                    class="w-full py-4 px-6 rounded-2xl bg-[#172B4D] hover:bg-[#243B5A] text-white font-extrabold text-xs shadow-subtle transition flex items-center justify-center gap-2"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Simulasi Bayar Lunas Instan</span>
+                  </button>
+                  <p class="text-[11px] text-center text-[#718096] mt-2">
+                    Opsi alternatif langsung pelunasan instan tanpa membuka pop-up.
+                  </p>
+                </div>
+              </form>
+            <% } else { %>
+              <!-- Saat Sudah Lunas -->
+              <div class="mt-6 p-8 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-center space-y-4">
+                <div class="w-14 h-14 rounded-full bg-[#16A37B] text-white flex items-center justify-center mx-auto shadow-subtle">
+                  <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-lg font-extrabold text-[#172B4D]">Pembayaran Lunas Terverifikasi!</h3>
+                  <p class="text-xs text-[#718096] mt-1">
+                    Metode: <strong><%= booking.transaction ? booking.transaction.paymentMethod : 'NusaPay' %></strong>
+                    &bull; Lunas pada:
+                    <strong><%= booking.transaction && booking.transaction.paidAt ? new Date(booking.transaction.paidAt).toLocaleString('id-ID') : '-' %></strong>
+                  </p>
+                </div>
+
+                <div class="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <a
+                    href="/bookings/<%= booking.id %>/invoice"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#172B4D] hover:bg-[#243B5A] text-white text-xs font-bold shadow-subtle transition"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>Cetak Invoice PDF (A4)</span>
+                  </a>
+
+                  <a
+                    href="/bookings/my"
+                    class="inline-flex items-center px-5 py-3 rounded-xl border border-[#E5EAF0] bg-white text-[#172B4D] text-xs font-semibold hover:bg-slate-50 transition"
+                  >
+                    Ke Halaman My Trip
+                  </a>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Kolom Kanan: Ringkasan Tagihan -->
+        <div class="bg-white rounded-3xl border border-[#E5EAF0] p-6 shadow-subtle space-y-5 h-fit">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-[#172B4D]">Ringkasan Tagihan</h3>
+
+          <div class="flex items-center gap-3.5 pb-4 border-b border-[#E5EAF0]">
+            <img
+              src="<%= booking.trip.imageUrl %>"
+              alt="<%= booking.trip.title %>"
+              class="w-20 aspect-card rounded-xl object-cover shrink-0"
+            />
+            <div>
+              <h4 class="text-xs font-extrabold text-[#172B4D] leading-snug"><%= booking.trip.title %></h4>
+              <p class="text-[11px] text-[#718096] mt-0.5"><%= booking.trip.destination %></p>
+            </div>
+          </div>
+
+          <div class="space-y-2.5 text-xs">
+            <div class="flex justify-between">
+              <span class="text-[#718096]">Kode Booking</span>
+              <span class="font-bold text-[#172B4D] font-mono"><%= booking.bookingCode %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[#718096]">Nama Pemesan</span>
+              <span class="font-semibold text-[#172B4D]"><%= booking.user.name %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[#718096]">Keberangkatan</span>
+              <span class="font-semibold text-[#172B4D]"><%= formatDate(booking.trip.startDate) %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[#718096]">Harga Satuan</span>
+              <span class="font-semibold text-[#172B4D] tabular-nums"><%= formatRupiah(booking.trip.price) %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[#718096]">Jumlah Peserta</span>
+              <span class="font-semibold text-[#172B4D] tabular-nums"><%= booking.participants %> Orang</span>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-[#E5EAF0] flex items-center justify-between">
+            <span class="text-xs font-bold text-[#718096]">Total Bayar</span>
+            <span class="text-lg font-extrabold text-[#16A6A1] tabular-nums">
+              <%= formatRupiah(booking.totalAmount) %>
+            </span>
+          </div>
+
+          <div class="pt-2">
+            <a
+              href="/bookings/<%= booking.id %>/invoice"
+              class="w-full py-3 px-4 rounded-xl border border-[#E5EAF0] hover:border-[#16A6A1] text-[#172B4D] hover:text-[#16A6A1] text-xs font-bold transition flex items-center justify-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              <span>Download Invoice PDF</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+
+  <!-- Midtrans Snap JS Script (Sandbox) -->
+  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<%= midtransClientKey %>"></script>
+  <script>
+    async function payWithMidtrans() {
+      const btn = document.getElementById('payMidtransBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span>Memuat Midtrans...</span>';
+
+      try {
+        const response = await fetch('/bookings/<%= booking.id %>/snap-token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.token) {
+          alert('Gagal memuat sesi Midtrans: ' + (data.error || 'Terjadi kesalahan'));
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          return;
+        }
+
+        window.snap.pay(data.token, {
+          onSuccess: async function (result) {
+            console.log('Midtrans Success:', result);
+            await notifyServer(result);
+            window.location.reload();
+          },
+          onPending: async function (result) {
+            console.log('Midtrans Pending:', result);
+            alert('Menunggu pembayaran diselesaikan.');
+            window.location.reload();
+          },
+          onError: function (result) {
+            console.error('Midtrans Error:', result);
+            alert('Pembayaran gagal atau dibatalkan.');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+          },
+          onClose: function () {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+          },
+        });
+      } catch (err) {
+        console.error('Midtrans Error:', err);
+        alert('Terjadi kendala saat membuka Midtrans Snap.');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    async function notifyServer(result) {
+      try {
+        await fetch('/bookings/<%= booking.id %>/midtrans-callback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            order_id: result.order_id,
+            transaction_status: result.transaction_status,
+            payment_type: result.payment_type,
+            transaction_id: result.transaction_id,
+          }),
+        });
+      } catch (e) {
+        console.error('Failed to notify backend:', e);
+      }
+    }
+  </script>
+</body>
+</html>

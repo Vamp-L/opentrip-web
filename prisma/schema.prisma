@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum BookingStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  FAILED
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role      @default(CUSTOMER)
+  createdAt DateTime  @default(now())
+  bookings  Booking[]
+}
+
+model Trip {
+  id             Int       @id @default(autoincrement())
+  title          String
+  destination    String
+  description    String    @db.Text
+  imageUrl       String
+  price          Int
+  startDate      DateTime
+  endDate        DateTime
+  quota          Int
+  availableQuota Int
+  createdAt      DateTime  @default(now())
+  bookings       Booking[]
+}
+
+model Booking {
+  id           Int           @id @default(autoincrement())
+  bookingCode  String        @unique
+  userId       Int
+  tripId       Int
+  participants Int
+  totalAmount  Int
+  status       BookingStatus @default(PENDING)
+  bookingDate  DateTime      @default(now())
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip         Trip          @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  transaction  Transaction?
+}
+
+model Transaction {
+  id                Int           @id @default(autoincrement())
+  bookingId         Int           @unique
+  paymentMethod     String
+  paymentStatus     PaymentStatus @default(UNPAID)
+  paymentGatewayRef String?
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  booking           Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}

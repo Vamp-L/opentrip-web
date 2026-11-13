@@ -1,0 +1,173 @@
+<%- include('../partials/head', { title: title }) %>
+
+<div class="min-h-screen flex flex-col lg:pl-72">
+  <!-- Background Header Argon -->
+  <div class="fixed top-0 left-0 right-0 h-72 bg-gradient-to-r from-argon-primary to-argon-info -z-10"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col">
+    <%- include('../partials/navbar', { pageTitle: pageTitle }) %>
+
+    <main class="px-6 pb-10 flex-1">
+      <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Detail Paket di Kolom Kiri -->
+        <div class="lg:col-span-5 bg-white rounded-2xl shadow-argon border border-slate-100 overflow-hidden flex flex-col">
+          <div class="relative h-56">
+            <img
+              src="<%= trip.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80' %>"
+              alt="<%= trip.title %>"
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute top-3 left-3">
+              <span class="px-3 py-1 rounded-full bg-argon-dark/80 text-white text-[11px] font-bold">
+                <i class="fa-solid fa-location-dot text-argon-info mr-1"></i><%= trip.destination %>
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h2 class="text-lg font-extrabold text-argon-dark mb-2"><%= trip.title %></h2>
+              <p class="text-xs text-slate-500 leading-relaxed mb-4"><%= trip.description %></p>
+            </div>
+
+            <div class="space-y-2.5 pt-4 border-t border-slate-100 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400 font-semibold">Tanggal Keberangkatan</span>
+                <span class="font-bold text-argon-dark"><%= formatDate(trip.departureDate) %></span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400 font-semibold">Harga Paket / Orang</span>
+                <span class="font-extrabold text-argon-primary"><%= formatRupiah(trip.price) %></span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400 font-semibold">Sisa Kuota Tersedia</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-extrabold">
+                  <%= trip.remainingQuota %> / <%= trip.maxQuota %> Kursi
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Input Pemesanan di Kolom Kanan -->
+        <div class="lg:col-span-7 bg-white rounded-2xl shadow-argon border border-slate-100 p-6 sm:p-8">
+          <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-extrabold text-argon-dark">Detail Pemesanan Anda</h3>
+              <p class="text-xs text-slate-400">Isi jumlah peserta dan catatan tambahan keberangkatan</p>
+            </div>
+            <a href="/catalog" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition">
+              <i class="fa-solid fa-arrow-left mr-1"></i> Batal
+            </a>
+          </div>
+
+          <form action="/bookings/create" method="POST" class="space-y-5">
+            <input type="hidden" name="tripId" value="<%= trip.id %>" />
+
+            <!-- Info Data Pemesan (Read-only dari Session) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+              <div>
+                <span class="text-[11px] font-bold uppercase text-slate-400 block">Nama Pemesan</span>
+                <span class="text-xs font-extrabold text-argon-dark"><%= currentUser.name %></span>
+              </div>
+              <div>
+                <span class="text-[11px] font-bold uppercase text-slate-400 block">Email Konfirmasi</span>
+                <span class="text-xs font-bold text-slate-600"><%= currentUser.email %></span>
+              </div>
+            </div>
+
+            <!-- Input Jumlah Peserta -->
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">
+                Jumlah Peserta (Maksimal <%= trip.remainingQuota %> Orang) *
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="participantsInput"
+                  name="participants"
+                  min="1"
+                  max="<%= trip.remainingQuota %>"
+                  value="<%= defaultPax %>"
+                  required
+                  oninput="updateTotalCalculation()"
+                  class="w-full px-4 py-3 text-sm font-extrabold text-argon-dark rounded-xl border border-slate-200 focus:outline-none focus:border-argon-primary focus:ring-2 focus:ring-argon-primary/20"
+                />
+                <span class="absolute inset-y-0 right-4 flex items-center text-xs font-bold text-slate-400 pointer-events-none">
+                  Peserta (Pax)
+                </span>
+              </div>
+            </div>
+
+            <!-- Input Catatan Pemesanan -->
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">
+                Catatan Tambahan / Titik Jemput (Opsional)
+              </label>
+              <textarea
+                name="notes"
+                rows="3"
+                placeholder="Contoh: Jemput di Stasiun Malang Kota Baru pukul 23.30, 1 peserta vegetarian..."
+                class="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:border-argon-primary focus:ring-2 focus:ring-argon-primary/20"
+              ></textarea>
+            </div>
+
+            <!-- Ringkasan Kalkulasi Harga Otomatis -->
+            <div class="p-5 rounded-2xl bg-indigo-50/70 border border-indigo-100 space-y-2">
+              <div class="flex items-center justify-between text-xs text-slate-600">
+                <span>Harga Satuan Paket</span>
+                <span class="font-bold"><%= formatRupiah(trip.price) %></span>
+              </div>
+              <div class="flex items-center justify-between text-xs text-slate-600">
+                <span>Jumlah Peserta</span>
+                <span id="paxDisplay" class="font-bold"><%= defaultPax %> Orang</span>
+              </div>
+              <div class="pt-2.5 border-t border-indigo-200/60 flex items-center justify-between">
+                <span class="text-xs font-extrabold uppercase text-argon-dark">Estimasi Total Tagihan</span>
+                <span id="totalPriceDisplay" class="text-xl font-extrabold text-argon-primary">
+                  <%= formatRupiah(Number(trip.price) * defaultPax) %>
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full py-3.5 px-6 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-extrabold text-sm shadow-lg transition flex items-center justify-center gap-2"
+            >
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>Buat Pesanan &amp; Lanjut ke Pembayaran Sandbox</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const unitPrice = <%= Number(trip.price) %>;
+      const maxQuota = <%= trip.remainingQuota %>;
+
+      function formatIDRClient(num) {
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(num);
+      }
+
+      function updateTotalCalculation() {
+        const input = document.getElementById('participantsInput');
+        let pax = parseInt(input.value, 10) || 1;
+        if (pax < 1) pax = 1;
+        if (pax > maxQuota) pax = maxQuota;
+
+        document.getElementById('paxDisplay').textContent = pax + ' Orang';
+        document.getElementById('totalPriceDisplay').textContent = formatIDRClient(pax * unitPrice);
+      }
+    </script>
+
+    <%- include('../partials/footer') %>
+  </div>
+</div>

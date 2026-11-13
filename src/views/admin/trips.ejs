@@ -1,0 +1,121 @@
+<%- include('../partials/head', { title: title }) %>
+
+<div class="min-h-screen flex flex-col lg:pl-72">
+  <!-- Background Header Argon -->
+  <div class="fixed top-0 left-0 right-0 h-72 bg-gradient-to-r from-argon-primary to-argon-info -z-10"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col">
+    <%- include('../partials/navbar', { pageTitle: pageTitle }) %>
+
+    <main class="px-6 pb-10 flex-1">
+      <div class="bg-white rounded-2xl shadow-argon border border-slate-100 overflow-hidden">
+        <!-- Header Tabel -->
+        <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-extrabold text-argon-dark">Daftar Paket Open Trip</h2>
+            <p class="text-xs text-slate-400">Kelola harga, jadwal keberangkatan, kuota maksimal, dan sisa kuota peserta.</p>
+          </div>
+          <a href="/admin/trips/create" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-bold text-xs shadow-md transition">
+            <i class="fa-solid fa-plus"></i>
+            <span>Tambah Paket Baru</span>
+          </a>
+        </div>
+
+        <!-- Tabel CRUD Paket Trip -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                <th class="py-3.5 px-6">Paket & Destinasi</th>
+                <th class="py-3.5 px-4">Tanggal Berangkat</th>
+                <th class="py-3.5 px-4">Harga / Pax</th>
+                <th class="py-3.5 px-4 text-center">Kuota Maks</th>
+                <th class="py-3.5 px-4 text-center">Sisa Kuota</th>
+                <th class="py-3.5 px-6 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm">
+              <% if (trips.length === 0) { %>
+                <tr>
+                  <td colspan="6" class="py-12 text-center text-slate-400">
+                    <i class="fa-solid fa-map-location-dot text-3xl mb-2 block text-slate-300"></i>
+                    Belum ada paket Open Trip. Klik tombol <strong>Tambah Paket Baru</strong> di kanan atas.
+                  </td>
+                </tr>
+              <% } %>
+
+              <% trips.forEach(trip => { %>
+                <tr class="hover:bg-slate-50/80 transition">
+                  <td class="py-4 px-6">
+                    <div class="flex items-center gap-3.5">
+                      <img
+                        src="<%= trip.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80' %>"
+                        alt="<%= trip.title %>"
+                        class="w-14 h-14 rounded-xl object-cover border border-slate-200 flex-shrink-0"
+                      />
+                      <div>
+                        <p class="font-extrabold text-argon-dark text-sm"><%= trip.title %></p>
+                        <p class="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                          <i class="fa-solid fa-location-dot text-argon-primary text-[11px]"></i>
+                          <span><%= trip.destination %></span>
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td class="py-4 px-4 text-xs font-semibold text-slate-600">
+                    <i class="fa-regular fa-calendar text-slate-400 mr-1"></i>
+                    <%= formatDate(trip.departureDate) %>
+                  </td>
+
+                  <td class="py-4 px-4 font-extrabold text-argon-primary text-xs">
+                    <%= formatRupiah(trip.price) %>
+                  </td>
+
+                  <td class="py-4 px-4 text-center text-xs font-bold text-slate-700">
+                    <%= trip.maxQuota %> Orang
+                  </td>
+
+                  <td class="py-4 px-4 text-center">
+                    <span class="px-3 py-1 rounded-full text-xs font-extrabold <%= trip.remainingQuota > 5 ? 'bg-emerald-50 text-emerald-700' : (trip.remainingQuota > 0 ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700') %>">
+                      <%= trip.remainingQuota %> Kursi
+                    </span>
+                  </td>
+
+                  <td class="py-4 px-6 text-right">
+                    <div class="inline-flex items-center gap-2">
+                      <a
+                        href="/admin/trips/<%= trip.id %>/edit"
+                        class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-argon-primary font-bold text-xs transition"
+                      >
+                        <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                      </a>
+
+                      <form
+                        action="/admin/trips/<%= trip.id %>/delete"
+                        method="POST"
+                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus paket <%= trip.title %>?');"
+                        class="inline"
+                      >
+                        <button
+                          type="submit"
+                          class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-argon-danger font-bold text-xs transition"
+                        >
+                          <i class="fa-solid fa-trash mr-1"></i> Hapus
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</div>

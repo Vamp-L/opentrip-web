@@ -1,0 +1,118 @@
+<%- include('../partials/head', { title: title }) %>
+
+<div class="min-h-screen flex flex-col lg:pl-72">
+  <!-- Background Header Argon -->
+  <div class="fixed top-0 left-0 right-0 h-72 bg-gradient-to-r from-argon-primary to-argon-info -z-10"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col">
+    <%- include('../partials/navbar', { pageTitle: pageTitle }) %>
+
+    <main class="px-6 pb-10 flex-1">
+      <div class="bg-white rounded-2xl shadow-argon border border-slate-100 overflow-hidden">
+        <!-- Header Tabel -->
+        <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-extrabold text-argon-dark">Daftar Riwayat Pesanan Saya</h2>
+            <p class="text-xs text-slate-400">Pantau status pembayaran dan unduh bukti struk / Invoice PDF resmi.</p>
+          </div>
+          <a href="/catalog" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-bold text-xs shadow-sm transition">
+            <i class="fa-solid fa-compass"></i>
+            <span>Pesan Trip Lainnya</span>
+          </a>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                <th class="py-3.5 px-6">No. Invoice</th>
+                <th class="py-3.5 px-4">Paket Open Trip</th>
+                <th class="py-3.5 px-4">Keberangkatan</th>
+                <th class="py-3.5 px-4 text-center">Peserta</th>
+                <th class="py-3.5 px-4">Total Tagihan</th>
+                <th class="py-3.5 px-4 text-center">Status</th>
+                <th class="py-3.5 px-6 text-right">Aksi / Dokumen</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-xs">
+              <% if (bookings.length === 0) { %>
+                <tr>
+                  <td colspan="7" class="py-12 text-center text-slate-400">
+                    <i class="fa-solid fa-receipt text-3xl mb-2 block text-slate-300"></i>
+                    Anda belum memiliki riwayat pemesanan Open Trip.
+                  </td>
+                </tr>
+              <% } %>
+
+              <% bookings.forEach(booking => { %>
+                <tr class="hover:bg-slate-50/80 transition">
+                  <td class="py-4 px-6">
+                    <span class="font-extrabold text-argon-dark block"><%= booking.bookingCode %></span>
+                    <span class="text-[11px] text-slate-400">Dipesan: <%= formatDate(booking.bookingDate) %></span>
+                  </td>
+
+                  <td class="py-4 px-4">
+                    <p class="font-bold text-argon-dark"><%= booking.trip.title %></p>
+                    <p class="text-[11px] text-slate-400"><%= booking.trip.destination %></p>
+                    <% if (booking.notes) { %>
+                      <p class="text-[11px] text-indigo-600 mt-0.5 italic">"<%= booking.notes %>"</p>
+                    <% } %>
+                  </td>
+
+                  <td class="py-4 px-4 font-semibold text-slate-600">
+                    <%= formatDate(booking.trip.departureDate) %>
+                  </td>
+
+                  <td class="py-4 px-4 text-center font-bold text-slate-700">
+                    <%= booking.participants %> Orang
+                  </td>
+
+                  <td class="py-4 px-4 font-extrabold text-argon-primary">
+                    <%= formatRupiah(booking.totalAmount) %>
+                  </td>
+
+                  <td class="py-4 px-4 text-center">
+                    <span class="px-3 py-1 rounded-full text-[11px] font-extrabold <%= booking.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : (booking.status === 'PENDING' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700') %>">
+                      <%= booking.status %>
+                    </span>
+                    <% if (booking.status === 'PAID' && booking.payment && booking.payment.paidAt) { %>
+                      <span class="block text-[10px] text-slate-400 mt-1">
+                        Lunas: <%= formatDate(booking.payment.paidAt) %>
+                      </span>
+                    <% } %>
+                  </td>
+
+                  <td class="py-4 px-6 text-right">
+                    <% if (booking.status === 'PENDING') { %>
+                      <a
+                        href="/bookings/<%= booking.id %>/payment"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition"
+                      >
+                        <i class="fa-solid fa-credit-card"></i>
+                        <span>Bayar Sandbox</span>
+                      </a>
+                    <% } else if (booking.status === 'PAID') { %>
+                      <a
+                        href="/transactions/<%= booking.id %>/invoice-pdf"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition"
+                      >
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>Cetak Invoice PDF</span>
+                      </a>
+                    <% } else { %>
+                      <span class="text-[11px] text-slate-400 font-medium">Dibatalkan / Gagal</span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</div>

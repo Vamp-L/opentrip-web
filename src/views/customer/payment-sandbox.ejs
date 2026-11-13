@@ -1,0 +1,202 @@
+<%- include('../partials/head', { title: title }) %>
+
+<div class="min-h-screen flex flex-col lg:pl-72">
+  <!-- Background Header Argon -->
+  <div class="fixed top-0 left-0 right-0 h-72 bg-gradient-to-r from-argon-primary to-argon-info -z-10"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col">
+    <%- include('../partials/navbar', { pageTitle: pageTitle }) %>
+
+    <main class="px-6 pb-10 flex-1">
+      <div class="max-w-4xl mx-auto">
+        <!-- Banner Mode Sandbox -->
+        <div class="mb-5 p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0">
+              <i class="fa-solid fa-flask"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-extrabold uppercase tracking-wider text-amber-900">Lingkungan Simulasi Payment Gateway (Sandbox)</h2>
+              <p class="text-xs text-amber-700">Ini adalah halaman pengujian pembayaran. Tidak ada uang asli yang dikenakan.</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-amber-200/80 text-amber-900 text-[11px] font-extrabold">
+            SANDBOX MODE
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Kolom Kiri: Kode VA & QRIS Dummy -->
+          <div class="lg:col-span-7 bg-white rounded-2xl shadow-argon border border-slate-100 p-6 sm:p-8">
+            <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-100">
+              <div>
+                <span class="text-[11px] font-bold uppercase text-slate-400">Nomor Invoice</span>
+                <h3 class="text-lg font-extrabold text-argon-dark"><%= booking.bookingCode %></h3>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-extrabold <%= booking.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : (booking.status === 'PENDING' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700') %>">
+                STATUS: <%= booking.status %>
+              </span>
+            </div>
+
+            <!-- Box Nomor Virtual Account Dummy -->
+            <div class="p-5 rounded-2xl bg-slate-900 text-white mb-6 relative overflow-hidden">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Nomor Virtual Account Sandbox</span>
+                <span class="px-2.5 py-0.5 rounded bg-indigo-500/30 text-indigo-300 text-[10px] font-bold border border-indigo-400/30">
+                  BCA / MANDIRI / BRI VA
+                </span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <p id="vaNumber" class="text-2xl sm:text-3xl font-mono font-extrabold tracking-widest text-cyan-300">
+                  <%= booking.payment ? booking.payment.referenceCode : '880820260001' %>
+                </p>
+                <button
+                  type="button"
+                  onclick="navigator.clipboard.writeText(document.getElementById('vaNumber').innerText.trim()); this.innerText='Tersalin!';"
+                  class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition"
+                >
+                  Salin VA
+                </button>
+              </div>
+              <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                <span class="text-slate-400">Total Tagihan Pembayaran</span>
+                <span class="text-lg font-extrabold text-emerald-400"><%= formatRupiah(booking.totalAmount) %></span>
+              </div>
+            </div>
+
+            <!-- Simulasi QRIS Dummy -->
+            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-center gap-5">
+              <div class="w-32 h-32 bg-white p-3 rounded-xl border border-slate-200 flex flex-col items-center justify-center flex-shrink-0 shadow-sm">
+                <i class="fa-solid fa-qrcode text-6xl text-argon-dark"></i>
+                <span class="text-[9px] font-extrabold tracking-widest text-slate-400 mt-1">QRIS DUMMY</span>
+              </div>
+              <div class="text-center sm:text-left">
+                <span class="inline-block px-2.5 py-0.5 rounded bg-indigo-100 text-argon-primary text-[10px] font-extrabold mb-1">
+                  QRIS SANDBOX NASIONAL
+                </span>
+                <h4 class="text-sm font-extrabold text-argon-dark">Scan QRIS atau Gunakan Tombol Simulasi</h4>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Pada lingkungan produksi, pelanggan memindai kode QRIS ini. Untuk keperluan pengujian, silakan klik tombol <strong>Konfirmasi Bayar Lunas (PAID)</strong> atau <strong>Batalkan / Gagal (FAILED)</strong> di samping.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kolom Kanan: Rincian Pesanan & Tombol Eksekusi Sandbox -->
+          <div class="lg:col-span-5 bg-white rounded-2xl shadow-argon border border-slate-100 p-6 flex flex-col justify-between">
+            <div>
+              <h3 class="text-base font-extrabold text-argon-dark pb-3 mb-4 border-b border-slate-100">
+                Rincian Paket &amp; Peserta
+              </h3>
+
+              <div class="space-y-3 text-xs">
+                <div>
+                  <span class="text-slate-400 block">Nama Paket Open Trip</span>
+                  <span class="font-extrabold text-argon-dark text-sm"><%= booking.trip.title %></span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Destinasi</span>
+                  <span class="font-bold text-slate-700"><%= booking.trip.destination %></span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Tanggal Keberangkatan</span>
+                  <span class="font-bold text-slate-700"><%= formatDate(booking.trip.departureDate) %></span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Nama Pemesan</span>
+                  <span class="font-bold text-slate-700"><%= booking.user.name %></span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Jumlah Peserta</span>
+                  <span class="font-extrabold text-argon-primary"><%= booking.participants %> Orang</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Sisa Kuota Saat Ini</span>
+                  <span class="font-bold text-emerald-600"><%= booking.trip.remainingQuota %> Kursi</span>
+                </div>
+                <% if (booking.notes) { %>
+                  <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <span class="text-[11px] font-bold text-slate-400 block mb-0.5">Catatan Pemesan:</span>
+                    <p class="text-slate-600"><%= booking.notes %></p>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Panel Tombol Aksi Sandbox -->
+            <div class="mt-6 pt-5 border-t border-slate-100">
+              <% if (booking.status === 'PENDING') { %>
+                <form action="/bookings/<%= booking.id %>/payment/simulate" method="POST" class="space-y-3">
+                  <div>
+                    <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Pilih Kanal Pembayaran Simulasi</label>
+                    <select
+                      name="paymentChannel"
+                      class="w-full px-3.5 py-2.5 text-xs font-bold text-argon-dark rounded-xl border border-slate-200 focus:outline-none focus:border-argon-primary"
+                    >
+                      <option value="QRIS Sandbox Instant">QRIS Sandbox Instant</option>
+                      <option value="BCA Virtual Account Sandbox">BCA Virtual Account Sandbox</option>
+                      <option value="Mandiri Virtual Account Sandbox">Mandiri Virtual Account Sandbox</option>
+                    </select>
+                  </div>
+
+                  <!-- Tombol Konfirmasi Bayar Lunas (PAID) -->
+                  <button
+                    type="submit"
+                    name="action"
+                    value="PAID"
+                    class="w-full py-3.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition flex items-center justify-center gap-2"
+                  >
+                    <i class="fa-solid fa-circle-check text-sm"></i>
+                    <span>Konfirmasi Bayar Lunas (PAID)</span>
+                  </button>
+
+                  <!-- Tombol Batalkan / Gagal (FAILED) -->
+                  <button
+                    type="submit"
+                    name="action"
+                    value="FAILED"
+                    onclick="return confirm('Simulasikan pembayaran ini sebagai GAGAL / DIBATALKAN?');"
+                    class="w-full py-3 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-argon-danger font-extrabold text-xs border border-rose-200 transition flex items-center justify-center gap-2"
+                  >
+                    <i class="fa-solid fa-circle-xmark text-sm"></i>
+                    <span>Batalkan / Simulasi Gagal (FAILED)</span>
+                  </button>
+                </form>
+              <% } else if (booking.status === 'PAID') { %>
+                <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center mb-3">
+                  <i class="fa-solid fa-circle-check text-2xl text-emerald-500 mb-1 block"></i>
+                  <p class="text-xs font-extrabold text-emerald-800">Transaksi Telah Lunas (PAID)</p>
+                  <p class="text-[11px] text-emerald-600 mt-0.5">Kuota paket trip telah otomatis dikurangi.</p>
+                </div>
+                <a
+                  href="/transactions/<%= booking.id %>/invoice-pdf"
+                  class="w-full py-3 px-4 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-extrabold text-xs shadow-md transition flex items-center justify-center gap-2"
+                >
+                  <i class="fa-solid fa-file-pdf"></i>
+                  <span>Cetak Invoice PDF</span>
+                </a>
+              <% } else { %>
+                <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-center">
+                  <i class="fa-solid fa-circle-xmark text-2xl text-rose-500 mb-1 block"></i>
+                  <p class="text-xs font-extrabold text-rose-800">Transaksi Berstatus <%= booking.status %></p>
+                </div>
+              <% } %>
+
+              <a
+                href="/my-bookings"
+                class="mt-3 w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition flex items-center justify-center gap-1.5"
+              >
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Kembali ke Riwayat Pesanan</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</div>

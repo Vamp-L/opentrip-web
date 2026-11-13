@@ -1,0 +1,113 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-[#F7F8FA] text-[#25334A] flex flex-col md:flex-row antialiased">
+
+  <%- include('../partials/sidebar', { activePage: 'trips' }) %>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <%- include('../partials/topbar') %>
+
+    <main class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#16A6A1]">Katalog Administrator</span>
+          <h1 class="text-2xl font-extrabold text-[#172B4D] mt-1">Kelola Paket Open Trip</h1>
+          <p class="text-xs text-[#718096] mt-0.5">Tambah, perbarui jadwal dan kuota, serta atur paket wisata.</p>
+        </div>
+        <a
+          href="/admin/trips/new"
+          class="px-5 py-2.5 rounded-xl bg-[#16A6A1] hover:bg-[#128884] text-white text-xs font-bold shadow-subtle transition w-fit"
+        >
+          + Tambah Paket Baru
+        </a>
+      </div>
+
+      <% if (success) { %>
+        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-[#16A37B] text-xs font-semibold">
+          <%= success %>
+        </div>
+      <% } %>
+
+      <% if (error) { %>
+        <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-[#DC5555] text-xs font-semibold">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <div class="bg-white rounded-3xl border border-[#E5EAF0] shadow-subtle overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-[#F7F8FA] border-b border-[#E5EAF0] text-[11px] font-bold uppercase tracking-wider text-[#718096]">
+                <th class="py-3.5 px-5">Paket Open Trip</th>
+                <th class="py-3.5 px-5">Destinasi</th>
+                <th class="py-3.5 px-5">Jadwal Keberangkatan</th>
+                <th class="py-3.5 px-5 text-right">Sisa Kursi</th>
+                <th class="py-3.5 px-5 text-right">Tarif / Pax</th>
+                <th class="py-3.5 px-5 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#E5EAF0] text-xs">
+              <% if (trips.length === 0) { %>
+                <tr>
+                  <td colspan="6" class="py-10 text-center text-[#718096]">Belum ada paket Open Trip yang ditambahkan.</td>
+                </tr>
+              <% } else { %>
+                <% trips.forEach((trip) => { %>
+                  <tr class="hover:bg-slate-50 transition">
+                    <td class="py-4 px-5">
+                      <div class="flex items-center gap-3.5">
+                        <img src="<%= trip.imageUrl %>" alt="<%= trip.title %>" class="w-16 aspect-card rounded-xl object-cover shrink-0 bg-slate-100" />
+                        <div>
+                          <div class="font-extrabold text-[#172B4D] text-sm"><%= trip.title %></div>
+                          <div class="text-[11px] text-[#718096] mt-0.5"><%= trip._count.bookings %> Pesanan Terdaftar</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-4 px-5 font-semibold text-[#25334A]"><%= trip.destination %></td>
+                    <td class="py-4 px-5 text-[#718096] whitespace-nowrap">
+                      <%= formatDate(trip.startDate) %> - <%= formatDate(trip.endDate) %>
+                    </td>
+                    <td class="py-4 px-5 text-right tabular-nums">
+                      <span class="font-extrabold text-[#172B4D]"><%= trip.availableQuota %></span>
+                      <span class="text-[#718096]">/ <%= trip.quota %></span>
+                    </td>
+                    <td class="py-4 px-5 text-right font-extrabold text-[#16A6A1] tabular-nums whitespace-nowrap">
+                      <%= formatRupiah(trip.price) %>
+                    </td>
+                    <td class="py-4 px-5">
+                      <div class="flex items-center justify-center gap-2">
+                        <a
+                          href="/admin/trips/<%= trip.id %>/edit"
+                          class="px-3 py-1.5 rounded-lg border border-[#E5EAF0] text-[#172B4D] hover:bg-slate-100 font-bold transition"
+                        >
+                          Edit
+                        </a>
+                        <form
+                          action="/admin/trips/<%= trip.id %>/delete"
+                          method="POST"
+                          onsubmit="return confirm('Hapus paket Open Trip ini?');"
+                        >
+                          <button
+                            type="submit"
+                            class="px-3 py-1.5 rounded-lg bg-rose-50 text-[#DC5555] hover:bg-rose-100 font-bold transition"
+                          >
+                            Hapus
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<%- include('../partials/head', { title: 'Login Akun' }) %>
+
+<div class="min-h-screen flex flex-col justify-between bg-[#f8f9fe]">
+  <!-- Header Banner Gradient Argon -->
+  <div class="relative bg-gradient-to-r from-argon-primary to-argon-info pb-36 pt-12 px-4 text-center text-white overflow-hidden">
+    <div class="max-w-xl mx-auto relative z-10">
+      <a href="/catalog" class="inline-flex items-center gap-2.5 mb-4 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-xs font-bold tracking-wide">
+        <i class="fa-solid fa-compass"></i> OPENTRIP ARGON INDONESIA
+      </a>
+      <h1 class="text-3xl sm:text-4xl font-extrabold mb-2">Selamat Datang Kembali!</h1>
+      <p class="text-sm text-white/85">Masuk ke akun Anda untuk mengelola perjalanan atau memesan paket Open Trip impian.</p>
+    </div>
+  </div>
+
+  <!-- Card Form Login -->
+  <div class="max-w-md w-full mx-auto px-4 -mt-24 relative z-20 mb-12">
+    <div class="bg-white rounded-2xl shadow-argon border border-slate-100 p-8">
+      <% if (flash) { %>
+        <div class="mb-5 p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 <%= flash.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200' %>">
+          <i class="fa-solid <%= flash.type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation' %> text-sm"></i>
+          <span><%= flash.message %></span>
+        </div>
+      <% } %>
+
+      <div class="text-center mb-6">
+        <h2 class="text-lg font-extrabold text-argon-dark">Login dengan Akun</h2>
+        <p class="text-xs text-slate-400 mt-1">Masukkan email dan kata sandi Anda</p>
+      </div>
+
+      <form action="/auth/login" method="POST" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">Alamat Email</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+              <i class="fa-solid fa-envelope text-sm"></i>
+            </span>
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="nama@email.com"
+              class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:border-argon-primary focus:ring-2 focus:ring-argon-primary/20 transition"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+              <i class="fa-solid fa-lock text-sm"></i>
+            </span>
+            <input
+              type="password"
+              name="password"
+              required
+              placeholder="••••••••"
+              class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:border-argon-primary focus:ring-2 focus:ring-argon-primary/20 transition"
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-3 px-4 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white font-bold text-sm shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5"
+        >
+          Masuk Sekarang
+        </button>
+      </form>
+
+      <!-- Kotak Info Akun Demo Seeder -->
+      <div class="mt-6 pt-5 border-t border-slate-100">
+        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 text-center mb-2.5">Akun Demo Tersedia (Klik untuk isi cepat)</p>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button
+            type="button"
+            onclick="document.querySelector('input[name=email]').value='admin@opentrip.com'; document.querySelector('input[name=password]').value='admin123';"
+            class="p-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-argon-primary font-semibold text-left transition"
+          >
+            <span class="block font-extrabold">Role: ADMIN</span>
+            <span class="text-[11px] opacity-80">admin@opentrip.com</span>
+          </button>
+          <button
+            type="button"
+            onclick="document.querySelector('input[name=email]').value='user@opentrip.com'; document.querySelector('input[name=password]').value='user123';"
+            class="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-left transition"
+          >
+            <span class="block font-extrabold">Role: CUSTOMER</span>
+            <span class="text-[11px] opacity-80">user@opentrip.com</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-6 text-center text-xs text-slate-500 space-y-2">
+        <p>Belum punya akun? <a href="/auth/register" class="text-argon-primary font-bold hover:underline">Daftar sebagai Customer</a></p>
+        <p><a href="/catalog" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left mr-1"></i> Kembali ke Katalog Publik</a></p>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</div>

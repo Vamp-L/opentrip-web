@@ -1,0 +1,163 @@
+<%- include('../partials/head', { title: title }) %>
+
+<div class="min-h-screen flex flex-col lg:pl-72">
+  <!-- Background Header Argon -->
+  <div class="fixed top-0 left-0 right-0 h-72 bg-gradient-to-r from-argon-primary to-argon-info -z-10"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col">
+    <%- include('../partials/navbar', { pageTitle: pageTitle }) %>
+
+    <main class="px-6 pb-10 flex-1">
+      <!-- 4 Kartu Statistik Argon -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-6">
+        <div class="bg-white rounded-2xl p-5 shadow-argon border border-slate-100 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Omzet (PAID)</p>
+            <h3 class="text-xl font-extrabold text-argon-dark mt-1"><%= formatRupiah(stats.totalRevenue) %></h3>
+            <p class="text-[11px] text-emerald-600 font-semibold mt-1">
+              <i class="fa-solid fa-check-circle mr-1"></i><%= stats.paidBookingsCount %> Transaksi Lunas
+            </p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-md">
+            <i class="fa-solid fa-sack-dollar text-lg"></i>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-argon border border-slate-100 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Paket Open Trip</p>
+            <h3 class="text-xl font-extrabold text-argon-dark mt-1"><%= stats.totalTrips %> Paket</h3>
+            <a href="/admin/trips" class="text-[11px] text-argon-primary font-semibold mt-1 inline-block hover:underline">
+              Kelola Paket <i class="fa-solid fa-arrow-right ml-0.5"></i>
+            </a>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-argon-primary to-indigo-400 text-white flex items-center justify-center shadow-md">
+            <i class="fa-solid fa-map-location-dot text-lg"></i>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-argon border border-slate-100 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Pesanan</p>
+            <h3 class="text-xl font-extrabold text-argon-dark mt-1"><%= stats.totalBookings %> Booking</h3>
+            <a href="/admin/transactions" class="text-[11px] text-argon-primary font-semibold mt-1 inline-block hover:underline">
+              Semua Transaksi <i class="fa-solid fa-arrow-right ml-0.5"></i>
+            </a>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center shadow-md">
+            <i class="fa-solid fa-receipt text-lg"></i>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-argon border border-slate-100 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Pelanggan Terdaftar</p>
+            <h3 class="text-xl font-extrabold text-argon-dark mt-1"><%= stats.totalCustomers %> Akun</h3>
+            <p class="text-[11px] text-cyan-600 font-semibold mt-1">Role Customer Aktif</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-sky-400 text-white flex items-center justify-center shadow-md">
+            <i class="fa-solid fa-users text-lg"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabel Ringkasan Paket Trip & Pesanan Terbaru -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <!-- Daftar Paket Terdekat -->
+        <div class="xl:col-span-7 bg-white rounded-2xl shadow-argon border border-slate-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-extrabold text-argon-dark">Jadwal Paket Open Trip</h2>
+              <p class="text-xs text-slate-400">Status kuota keberangkatan terdekat</p>
+            </div>
+            <a href="/admin/trips/create" class="px-3.5 py-2 rounded-xl bg-argon-primary hover:bg-indigo-600 text-white text-xs font-bold shadow-sm transition">
+              <i class="fa-solid fa-plus mr-1"></i> Tambah Trip
+            </a>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                  <th class="py-3 px-5">Nama Trip</th>
+                  <th class="py-3 px-4">Keberangkatan</th>
+                  <th class="py-3 px-4">Harga</th>
+                  <th class="py-3 px-4 text-center">Sisa Kuota</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-xs">
+                <% if (latestTrips.length === 0) { %>
+                  <tr>
+                    <td colspan="4" class="py-8 text-center text-slate-400">Belum ada paket Open Trip.</td>
+                  </tr>
+                <% } %>
+                <% latestTrips.forEach(trip => { %>
+                  <tr class="hover:bg-slate-50/80 transition">
+                    <td class="py-3.5 px-5">
+                      <p class="font-bold text-argon-dark"><%= trip.title %></p>
+                      <p class="text-[11px] text-slate-400"><%= trip.destination %></p>
+                    </td>
+                    <td class="py-3.5 px-4 font-medium text-slate-600"><%= formatDate(trip.departureDate) %></td>
+                    <td class="py-3.5 px-4 font-bold text-argon-primary"><%= formatRupiah(trip.price) %></td>
+                    <td class="py-3.5 px-4 text-center">
+                      <span class="px-2.5 py-1 rounded-full text-[11px] font-bold <%= trip.remainingQuota > 5 ? 'bg-emerald-50 text-emerald-700' : (trip.remainingQuota > 0 ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700') %>">
+                        <%= trip.remainingQuota %> / <%= trip.maxQuota %> Kursi
+                      </span>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Transaksi Booking Terbaru -->
+        <div class="xl:col-span-5 bg-white rounded-2xl shadow-argon border border-slate-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-extrabold text-argon-dark">Pesanan Terbaru</h2>
+              <p class="text-xs text-slate-400">5 aktivitas booking terakhir</p>
+            </div>
+            <a href="/admin/transactions" class="text-xs font-bold text-argon-primary hover:underline">Semua Transaksi</a>
+          </div>
+          <div class="p-5 space-y-3.5">
+            <% if (recentBookings.length === 0) { %>
+              <div class="py-8 text-center text-xs text-slate-400">
+                <i class="fa-solid fa-inbox text-2xl mb-2 block text-slate-300"></i>
+                Belum ada transaksi pemesanan dari Customer.
+              </div>
+            <% } %>
+            <% recentBookings.forEach(booking => { %>
+              <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-100 gap-3">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-extrabold text-argon-dark"><%= booking.bookingCode %></span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold <%= booking.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : (booking.status === 'PENDING' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700') %>">
+                      <%= booking.status %>
+                    </span>
+                  </div>
+                  <p class="text-xs text-slate-600 font-medium mt-0.5"><%= booking.user.name %> — <%= booking.trip.title %></p>
+                  <p class="text-[11px] text-slate-400"><%= booking.participants %> Peserta • <%= formatDate(booking.bookingDate) %></p>
+                </div>
+                <div class="text-right flex flex-col items-end gap-1.5">
+                  <p class="text-xs font-extrabold text-argon-primary"><%= formatRupiah(booking.totalAmount) %></p>
+                  <% if (booking.status === 'PAID') { %>
+                    <a
+                      href="/transactions/<%= booking.id %>/invoice-pdf"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-argon-primary text-white text-[10px] font-bold hover:bg-indigo-600 transition"
+                    >
+                      <i class="fa-solid fa-file-pdf"></i> Invoice PDF
+                    </a>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= typeof title !== 'undefined' ? title : 'OpenTrip - Jelajahi Keindahan Indonesia' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              navy: '#172B4D',
+              navyDark: '#0D1B2A',
+              navyLight: '#243B5A',
+              teal: '#16A6A1',
+              tealHover: '#128884',
+              tealLight: '#E8F7F7',
+              bg: '#F7F8FA',
+              surface: '#FFFFFF',
+              textPrimary: '#25334A',
+              textSecondary: '#718096',
+              border: '#E5EAF0',
+              success: '#16A37B',
+              warning: '#E6A23C',
+              danger: '#DC5555'
+            }
+          },
+          boxShadow: {
+            subtle: '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)',
+            premium: '0 10px 25px -5px rgba(23, 43, 77, 0.06), 0 8px 10px -6px rgba(23, 43, 77, 0.04)',
+            cardHover: '0 20px 30px -10px rgba(23, 43, 77, 0.12)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #25334A;
+      background-color: #F7F8FA;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .aspect-card {
+      aspect-ratio: 16 / 10;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F7F8FA;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+  </style>
+</head>
